@@ -2,7 +2,15 @@
 
 Aplicación de mecanografía educativa ejecutable, con backend real, autenticación, base de datos y gestión docente. Identidad magenta `#cc0b4e`, verde `#45ae46`, superficies espaciales y un **ATIBOT provisional dibujado en CSS**, sustituible y no oficial.
 
-## Ejecutar
+## Usarla online, sin abrir Python
+
+[![Deploy to Render](https://render.com/images/deploy-to-render-button.svg)](https://render.com/deploy?repo=https://github.com/pbxbtbx/EDCLUBATIGRA)
+
+El botón inicia la instalación en tu cuenta de Render; **no es una aplicación ya desplegada**. La configuración incluye un servidor de producción Waitress y un disco persistente. Requiere un plan de pago de Render. Introduce una contraseña docente propia en los ajustes del alojamiento; no se habilitan cuentas demo online. Cuando Render termine, usa la URL HTTPS que muestre su panel.
+
+Instrucciones paso a paso: [DEPLOY.md](DEPLOY.md). También se puede alojar en Railway o en un servidor propio con volumen persistente.
+
+## Ejecutar en tu ordenador
 
 Requiere **Python 3.11 o posterior**, SQLite incluido en Python y la base de zonas horarias IANA del sistema. No necesita Node, paquetes de Python, claves API, CDN ni servicios externos para funcionar.
 
@@ -40,7 +48,7 @@ El docente puede crear clases y cuentas, comunicar las credenciales privadamente
 - `manage.py`: administración local de cuentas docentes y restablecimiento de contraseñas.
 - `tests/`: pruebas de reglas, API, persistencia, permisos y flujo de navegador.
 
-Esta arquitectura permite una primera versión local verificable con una instalación mínima. `ThreadingHTTPServer` es un servidor de desarrollo: para uso público hay que añadir terminación HTTPS, supervisión, límites de tráfico, copias de seguridad y un servidor HTTP de producción o sustituir la capa HTTP manteniendo las reglas y datos. No se ha desplegado en un servicio externo.
+Esta arquitectura permite una primera versión local verificable con una instalación mínima. `python server.py` usa `ThreadingHTTPServer` para desarrollo; `python wsgi.py` usa Waitress para hosting: para uso público hay que añadir terminación HTTPS, supervisión, límites de tráfico, copias de seguridad y un servidor HTTP de producción y usar el punto de entrada WSGI con Waitress. No se ha desplegado en un servicio externo.
 
 ## Funcionalidades
 

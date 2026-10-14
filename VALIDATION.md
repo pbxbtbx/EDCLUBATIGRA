@@ -24,3 +24,11 @@ Aplicación local ejecutable con SQLite persistente. El primer recorrido explora
 La configuración `install_script` y `start_skill` se guardó correctamente como **borrador del entorno**, sin cambios en permisos de red ni nuevos secretos. El usuario debe revisar y guardar los cambios en ajustes y publicar el entorno si desea activar esa versión. Guardar el borrador no ejecuta scripts ni constituye publicación. No se comprobó una restauración en una tarea cloud nueva ni un despliegue público.
 
 El backend HTTP es de desarrollo; HTTPS, supervisión y backups deben configurarse antes de uso público. Los controles de eventos y velocidad son básicos y no impiden a un cliente modificado fabricar entradas plausibles. ATIBOT es provisional, no oficial. No se realizó una auditoría completa con lector de pantalla, prueba de carga ni evaluación pedagógica con alumnado real. No se requiere ningún recurso o servicio externo para la ejecución local.
+
+## Preparación adicional para acceso online
+
+Se añadió `wsgi.py`, un adaptador de la misma API para Waitress, `requirements.txt` con Waitress 3.0.2 y un blueprint `render.yaml` con disco persistente. `DEPLOY.md` explica el despliegue desde GitHub, la contraseña de inicialización privada y por qué GitHub Pages no puede ejecutar el backend. El punto de entrada de producción desactiva la creación de demo por defecto y requiere configurar una contraseña docente en el proveedor si no existen usuarios.
+
+La suite se amplió a **23 pruebas correctas**, incluyendo transporte WSGI, autorización, CSRF, origen, métodos, cabeceras, inicialización sin cuentas demo y reinicialización sin sobrescribir credenciales. También se ejecutó el **servidor real Waitress** en una base temporal: acceso docente, clase, cuenta de alumno, asignación, misión con `ñ` y tilde, valoración, clasificación y reinicio conservando sesión e intentos. La prueba local utilizó cookies para HTTP; el blueprint activa cookies Secure para HTTPS en Render.
+
+El blueprint usa un servicio Starter y disco de pago; se debe revisar el coste y confirmar la contratación en Render. No se creó ningún servicio externo, no se introdujeron credenciales reales en el repositorio ni se validó una URL remota. El botón de Render abre la instalación, no una aplicación publicada.

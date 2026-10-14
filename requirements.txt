@@ -1,0 +1,2 @@
+# Only needed for production hosting. Local python server.py remains dependency-free.
+waitress==3.0.2

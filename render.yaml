@@ -1,0 +1,26 @@
+# Deploying this blueprint requires a paid Render service with a persistent disk.
+services:
+  - type: web
+    name: atibot-academy
+    runtime: python
+    plan: starter
+    buildCommand: pip install -r requirements.txt
+    startCommand: python wsgi.py
+    healthCheckPath: /api/config
+    disk:
+      name: atigra-data
+      mountPath: /var/lib/atigra
+      sizeGB: 1
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.12.14
+      - key: ATIGRA_DB
+        value: /var/lib/atigra/atigra.sqlite3
+      - key: ATIGRA_DEMO
+        value: "0"
+      - key: ATIGRA_SECURE_COOKIE
+        value: "1"
+      - key: ATIGRA_ADMIN_USERNAME
+        value: comandante
+      - key: ATIGRA_ADMIN_PASSWORD
+        sync: false
