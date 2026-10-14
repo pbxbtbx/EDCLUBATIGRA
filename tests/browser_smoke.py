@@ -212,6 +212,9 @@ class BrowserFlow(unittest.TestCase):
                     page.locator(".modal input[name=name]").fill("Browser class")
                     page.locator(".modal button[type=submit]").click()
                     page.wait_for_selector(".modal", state="detached")
+                    page.locator(".panel h2").filter(
+                        has_text="Browser class"
+                    ).wait_for()
                     self.assertIn("Browser class", page.locator("body").inner_text())
                     page.locator("[data-new-student]").first.click()
                     for name, value in [
@@ -222,6 +225,9 @@ class BrowserFlow(unittest.TestCase):
                         page.locator(f".modal [name={name}]").fill(value)
                     page.locator(".modal button[type=submit]").click()
                     page.wait_for_selector(".modal", state="detached")
+                    page.locator("td strong").filter(
+                        has_text="Browser Pilot"
+                    ).wait_for()
                     self.assertIn("Browser Pilot", page.locator("body").inner_text())
                     page.locator('[data-page="levels"]').click()
                     page.wait_for_selector("#new-level")
@@ -230,6 +236,9 @@ class BrowserFlow(unittest.TestCase):
                     page.locator(".modal [name=text]").fill("¡Hola, ñ!")
                     page.locator(".modal button[type=submit]").click()
                     page.wait_for_selector(".modal", state="detached")
+                    page.locator("td strong").filter(
+                        has_text="Browser mission"
+                    ).wait_for()
                     self.assertIn("Browser mission", page.locator("body").inner_text())
                     page.locator('[data-page="reports"]').click()
                     page.wait_for_selector("#report-body table")

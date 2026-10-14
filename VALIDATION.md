@@ -54,3 +54,13 @@ El lanzador ya no considera suficiente que haya una página ATIBOT en el puerto 
 Un fallo interno al leer el panel ya no se presenta como «Revisa los campos del formulario». En esos fallos se devuelve una referencia aleatoria y se registra el tipo de excepción y la ubicación del código sin los valores del formulario. La interfaz distingue credenciales rechazadas de credenciales aceptadas con fallo posterior de carga.
 
 Resultado: **28 pruebas correctas**. Las nuevas regresiones simulan un servidor antiguo aún activo (se abre el nuevo en otro puerto y el antiguo permanece intacto) y un fallo interno del panel (500 con referencia, sin exponer el valor de la excepción). El recorrido Chromium completo pasó en **17,925 segundos**, incluida la simulación del mensaje reportado después de aceptar la contraseña y un reintento correcto. No se verificó el ordenador del usuario: la causa concreta de su ejecución sigue sin confirmarse; se comprobó que utiliza una dirección local en el puerto 8000.
+
+## Corrección de la carrera al guardar sesiones
+
+Se reprodujo un fallo real en el servidor HTTP local: `/api/login` enviaba la cookie y el resultado 200 antes de que el contexto SQLite confirmara la transacción. Un GET inmediato al panel podía responder 401 aunque la contraseña fuera correcta. Se observó con `nova.demo` en la instancia local; la misma operación funcionaba con las otras dos cuentas en ese momento.
+
+Las respuestas confirman ahora la transacción antes de enviar cabeceras o cuerpo. El cambio también hace que una operación docente confirmada sea visible para la siguiente consulta. Las excepciones siguen provocando rollback antes de devolver el error.
+
+Una regresión con confirmación artificialmente lenta reproduce **401 con el orden antiguo** y pasa con el orden nuevo. Resultado de la suite actual: **29 pruebas correctas**. Se ajustó el recorrido de navegador para esperar a que aparezca la clase/alumno/nivel después de la recarga asíncrona; cerrar el formulario no implica que haya terminado esa recarga. El recorrido completo pasó después del cambio. Se comprobó además el inicio de sesión y panel con `nova.demo`, `leo.demo` y `luna.demo` en la instancia corregida: las tres devuelven 200 y sus 18 misiones.
+
+La autenticación Git HTTPS continúa sin estar disponible y la comprobación de API GitHub tampoco pudo conectar. Se entrega un ZIP completo de la versión local comprobada; no se afirma que estos últimos commits estén subidos a GitHub. Esto no demuestra el resultado en el ordenador del usuario hasta que ejecute esa versión.

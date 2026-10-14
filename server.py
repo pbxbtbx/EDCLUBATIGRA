@@ -553,6 +553,12 @@ class Handler(BaseHTTPRequestHandler):
             if isinstance(data, bytes)
             else json.dumps(data, ensure_ascii=False).encode()
         )
+        # A successful response must never race the transaction it acknowledges.
+        # In particular the browser sends its next authenticated request as soon
+        # as it receives the session cookie, before the outer context may exit.
+        request_db = getattr(self, "request_db", None)
+        if request_db is not None and request_db.in_transaction:
+            request_db.commit()
         self.send_response(status)
         self.send_header("Content-Type", content_type)
         self.send_header("Content-Length", str(len(body)))
@@ -607,6 +613,7 @@ class Handler(BaseHTTPRequestHandler):
                     403,
                 )
             with connect() as db:
+                self.request_db = db
                 if self.command == "POST":
                     db.execute("BEGIN IMMEDIATE")
                 if path == "/api/config" and self.command == "GET":

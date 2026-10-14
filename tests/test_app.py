@@ -218,6 +218,36 @@ class ApiTests(unittest.TestCase):
             {"run_id": r["run_id"], "events": events, "active_ms": seconds * 1000},
         )
 
+    def test_login_cookie_is_only_sent_after_session_is_committed(self):
+        from unittest.mock import patch
+        import sqlite3
+
+        class SlowCommit(sqlite3.Connection):
+            def commit(self):
+                if self.in_transaction:
+                    time.sleep(0.15)
+                return super().commit()
+
+            def __exit__(self, kind, value, trace):
+                if self.in_transaction:
+                    time.sleep(0.15)
+                return super().__exit__(kind, value, trace)
+
+        def slow_database():
+            db = sqlite3.connect(server.DB_PATH, timeout=20, factory=SlowCommit)
+            db.row_factory = sqlite3.Row
+            db.execute("PRAGMA foreign_keys=ON")
+            return db
+
+        client = Client(self.base)
+        with patch("server.connect", side_effect=slow_database):
+            client.login()
+            status, dashboard = client.request("/api/student")
+            self.assertEqual(status, 200, dashboard)
+            self.assertTrue(
+                any(level["level_id"] == 1 for level in dashboard["levels"])
+            )
+
     def test_internal_dashboard_failure_is_not_a_form_error(self):
         import contextlib, io
         from unittest.mock import patch
