@@ -116,6 +116,25 @@ class ScoreTests(unittest.TestCase):
         for value, expected in cases:
             self.assertEqual(server.week_key(datetime.fromisoformat(value)), expected)
 
+    def test_madrid_without_system_zoneinfo(self):
+        from unittest.mock import patch
+        from zoneinfo import ZoneInfo, ZoneInfoNotFoundError
+
+        real_from_file = ZoneInfo.from_file
+        with patch("server.ZoneInfo") as missing:
+            missing.side_effect = ZoneInfoNotFoundError("Europe/Madrid")
+            missing.from_file.side_effect = real_from_file
+            cases = [
+                ("2026-03-29T22:00:00+00:00", "2026-03-30"),
+                ("2026-10-25T22:59:59+00:00", "2026-10-19"),
+                ("2026-10-25T23:00:00+00:00", "2026-10-26"),
+            ]
+            for moment, expected in cases:
+                self.assertEqual(
+                    server.week_key(datetime.fromisoformat(moment)), expected
+                )
+            self.assertEqual(server.madrid_timezone().key, "Europe/Madrid")
+
     def test_password_hash(self):
         encoded = server.password_hash("strong-pass")
         self.assertNotIn("strong-pass", encoded)
@@ -198,6 +217,22 @@ class ApiTests(unittest.TestCase):
             "/api/attempt",
             {"run_id": r["run_id"], "events": events, "active_ms": seconds * 1000},
         )
+
+    def test_student_login_dashboard_without_system_timezones(self):
+        from unittest.mock import patch
+        from zoneinfo import ZoneInfo, ZoneInfoNotFoundError
+
+        real_from_file = ZoneInfo.from_file
+        with patch("server.ZoneInfo") as missing:
+            missing.side_effect = ZoneInfoNotFoundError("Europe/Madrid")
+            missing.from_file.side_effect = real_from_file
+            status, dashboard = self.student.request("/api/student")
+            self.assertEqual(status, 200, dashboard)
+            self.assertEqual(len(dashboard["week"]), 10)
+            status, report = self.teacher.request(
+                "/api/reports?from=2026-10-01&to=2026-10-31"
+            )
+            self.assertEqual(status, 200, report)
 
     def test_seed_and_roles(self):
         status, report = self.teacher.request("/api/teacher")

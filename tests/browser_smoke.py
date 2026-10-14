@@ -75,7 +75,34 @@ class BrowserFlow(unittest.TestCase):
                     # Keyboard navigation into login.
                     page.keyboard.press("Tab")
                     self.assertIn("Skip", page.locator(":focus").inner_text())
-                    page.locator('[data-demo="nova.demo"]').click()
+                    # Exercise the actual submit button, including recovery paths.
+                    page.locator("#login-form button[type=submit]").click()
+                    self.assertIn(
+                        "Escribe tu usuario", page.locator("#login-error").inner_text()
+                    )
+                    page.locator("#login-form [name=login]").fill("nova.demo")
+                    page.locator("#login-form [name=password]").fill("AtigraDemo2026!")
+                    page.route("**/api/login", lambda route: route.abort())
+                    page.locator("#login-form button[type=submit]").click()
+                    page.wait_for_function(
+                        "() => document.querySelector('#login-error').textContent.includes('No se puede conectar')"
+                    )
+                    self.assertTrue(
+                        page.locator("#login-form button[type=submit]").is_enabled()
+                    )
+                    page.unroute("**/api/login")
+                    page.locator("#login-form [name=password]").fill(
+                        "incorrect-password"
+                    )
+                    page.locator("#login-form button[type=submit]").click()
+                    page.wait_for_function(
+                        "() => document.querySelector('#login-error').textContent.includes('incorrectos')"
+                    )
+                    self.assertTrue(
+                        page.locator("#login-form button[type=submit]").is_enabled()
+                    )
+                    page.locator("#login-form [name=password]").fill("AtigraDemo2026!")
+                    page.locator("#login-form button[type=submit]").click()
                     page.wait_for_selector(".planet-card")
                     self.assertEqual(page.locator(".planet-card").count(), 6)
                     page.locator('[data-language="en"]').click()

@@ -2,7 +2,7 @@
 """ATIBOT Academy: dependency-free educational typing application."""
 import argparse, csv, hashlib, hmac, io, json, os, secrets, sqlite3, time, unicodedata
 from datetime import datetime, timedelta, timezone
-from zoneinfo import ZoneInfo
+from zoneinfo import ZoneInfo, ZoneInfoNotFoundError
 from pathlib import Path
 from http.server import ThreadingHTTPServer, BaseHTTPRequestHandler
 from http.cookies import SimpleCookie
@@ -55,8 +55,19 @@ def now():
     return datetime.now(timezone.utc).isoformat()
 
 
+def madrid_timezone():
+    """Windows may not ship IANA zones. Fall back to the bundled IANA data."""
+    try:
+        return ZoneInfo("Europe/Madrid")
+    except ZoneInfoNotFoundError:
+        with (ROOT / "resources" / "timezones" / "Europe-Madrid.tzif").open(
+            "rb"
+        ) as file:
+            return ZoneInfo.from_file(file, key="Europe/Madrid")
+
+
 def week_key(moment=None):
-    d = (moment or datetime.now(timezone.utc)).astimezone(ZoneInfo("Europe/Madrid"))
+    d = (moment or datetime.now(timezone.utc)).astimezone(madrid_timezone())
     return (d.date() - timedelta(days=d.weekday())).isoformat()
 
 
@@ -888,7 +899,7 @@ class Handler(BaseHTTPRequestHandler):
             for key, op in [("from", ">="), ("to", "<")]:
                 if q.get(key, [""])[0]:
                     local = datetime.strptime(q[key][0], "%Y-%m-%d").replace(
-                        tzinfo=ZoneInfo("Europe/Madrid")
+                        tzinfo=madrid_timezone()
                     )
                     if key == "to":
                         local += timedelta(days=1)

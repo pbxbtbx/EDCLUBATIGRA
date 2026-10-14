@@ -1,6 +1,12 @@
 "use strict";
 const dictionary = {
   es: {
+    missingLogin: "Escribe tu usuario y tu contraseña para entrar.",
+    signingIn: "Entrando…",
+    backendUnavailable:
+      "No se puede conectar con la academia. Abre INICIAR_WINDOWS.bat y mantén su ventana abierta. Usa la dirección que abra el programa, no el archivo HTML ni GitHub Pages.",
+    requestTimeout:
+      "El servidor no responde. Comprueba que la ventana de inicio siga abierta y vuelve a intentarlo.",
     space: "ESPACIO",
     level_has_history:
       "Esta misión tiene asignaciones o historial. Consérvala como borrador.",
@@ -277,6 +283,12 @@ const dictionary = {
     badgeProgress: "Completa misiones para ganar reconocimientos.",
   },
   en: {
+    missingLogin: "Enter your username and password to sign in.",
+    signingIn: "Signing in…",
+    backendUnavailable:
+      "Cannot connect to the academy. Run the local launcher and keep its window open. Use the address opened by the launcher, not the HTML file or GitHub Pages.",
+    requestTimeout:
+      "The server is not responding. Check that the launcher window is still open and try again.",
     space: "SPACE",
     level_has_history:
       "This mission has assignments or history. Keep it as a draft.",
@@ -626,26 +638,57 @@ function toast(message) {
   toast.timer = setTimeout(() => $("#toast").classList.remove("visible"), 4500);
 }
 async function api(path, data) {
-  const response = await fetch(path, {
-    credentials: "same-origin",
-    method: data === undefined ? "GET" : "POST",
-    headers:
-      data === undefined
-        ? {}
-        : {
-            "Content-Type": "application/json",
-            "X-CSRF-Token": state.csrf || "",
-          },
-    body: data === undefined ? undefined : JSON.stringify(data),
-  });
-  const result = await response.json();
-  if (!response.ok) {
-    const error = new Error(t(result.error) || t("error"));
-    error.code = result.error;
-    throw error;
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), 15000);
+  try {
+    let response;
+    try {
+      response = await fetch(path, {
+        credentials: "same-origin",
+        method: data === undefined ? "GET" : "POST",
+        headers:
+          data === undefined
+            ? {}
+            : {
+                "Content-Type": "application/json",
+                "X-CSRF-Token": state.csrf || "",
+              },
+        body: data === undefined ? undefined : JSON.stringify(data),
+        signal: controller.signal,
+      });
+    } catch (error) {
+      throw new Error(
+        t(
+          error.name === "AbortError" ? "requestTimeout" : "backendUnavailable",
+        ),
+      );
+    }
+    if (
+      !(response.headers.get("Content-Type") || "").includes("application/json")
+    ) {
+      throw new Error(t("backendUnavailable"));
+    }
+    let result;
+    try {
+      result = await response.json();
+    } catch (error) {
+      throw new Error(
+        t(
+          error.name === "AbortError" ? "requestTimeout" : "backendUnavailable",
+        ),
+      );
+    }
+    if (!response.ok) {
+      const error = new Error(t(result.error) || t("error"));
+      error.code = result.error;
+      throw error;
+    }
+    return result;
+  } finally {
+    clearTimeout(timeout);
   }
-  return result;
 }
+
 function errorMessage(error) {
   toast(error.message || t("error"));
 }
@@ -697,26 +740,42 @@ function render() {
 function renderLogin() {
   document.documentElement.lang = state.language;
   $("#app").innerHTML =
-    `<div class="login"><section class="login-space">${brand()}<div class="login-copy"><span class="eyebrow" style="color:#9edf9f">ATIBOT ACADEMY</span><h1>${t("loginTitle")}</h1><p>${t("loginIntro")}</p></div><div class="login-art">${bot("big")}</div><div class="footnote"><span>${t("physical")}</span><span>${t("provisional")}</span></div></section><main id="main" class="login-form-wrap"><div class="login-language">${languagePicker()}</div><div class="login-form"><span class="eyebrow">${t("academy")}</span><h2>${t("welcomeBack")}</h2><p>${t("loginSubtitle")}</p><form id="login-form">${field("username", input("login", "", "text", 'required autocomplete="username"'))}${field("password", input("password", "", "password", 'required autocomplete="current-password" maxlength="200"'))}<p class="error" id="login-error" role="alert"></p><button class="primary" type="submit">${t("login")} <span aria-hidden="true">→</span></button></form>${state.demo ? `<div class="demo-box"><span class="eyebrow">${t("demo")}</span><p>${t("demoInfo")}</p><button data-demo="nova.demo">${t("student")} · Nova</button><button data-demo="profe.demo">${t("teacher")}</button><p>${t("loginDemoWarning")}</p></div>` : ""}<p class="small">⌨ ${t("physical")}</p></div></main></div>`;
+    `<div class="login"><section class="login-space">${brand()}<div class="login-copy"><span class="eyebrow" style="color:#9edf9f">ATIBOT ACADEMY</span><h1>${t("loginTitle")}</h1><p>${t("loginIntro")}</p></div><div class="login-art">${bot("big")}</div><div class="footnote"><span>${t("physical")}</span><span>${t("provisional")}</span></div></section><main id="main" class="login-form-wrap"><div class="login-language">${languagePicker()}</div><div class="login-form"><span class="eyebrow">${t("academy")}</span><h2>${t("welcomeBack")}</h2><p>${t("loginSubtitle")}</p><form id="login-form" novalidate>${field("username", input("login", "", "text", 'required autocomplete="username"'))}${field("password", input("password", "", "password", 'required autocomplete="current-password" maxlength="200"'))}<p class="error" id="login-error" role="alert"></p><button class="primary" type="submit">${t("login")} <span aria-hidden="true">→</span></button></form>${state.demo ? `<div class="demo-box"><span class="eyebrow">${t("demo")}</span><p>${t("demoInfo")}</p><button data-demo="nova.demo">${t("student")} · Nova</button><button data-demo="profe.demo">${t("teacher")}</button><p>${t("loginDemoWarning")}</p></div>` : ""}<p class="small">⌨ ${t("physical")}</p></div></main></div>`;
   bindCommon();
   $("#login-form").onsubmit = async (event) => {
     event.preventDefault();
-    const button = event.target.querySelector("button");
+    const form = event.currentTarget;
+    const errorLabel = form.querySelector("#login-error");
+    const button = form.querySelector("button[type=submit]");
+    const credentials = Object.fromEntries(new FormData(form));
+    credentials.login = credentials.login.trim();
+    errorLabel.textContent = "";
+    if (!credentials.login || !credentials.password) {
+      errorLabel.textContent = t("missingLogin");
+      form.elements[!credentials.login ? "login" : "password"].focus();
+      return;
+    }
     button.disabled = true;
+    button.textContent = t("signingIn");
+    form.setAttribute("aria-busy", "true");
     try {
-      const result = await api(
-        "/api/login",
-        Object.fromEntries(new FormData(event.target)),
-      );
+      const result = await api("/api/login", credentials);
       state.user = result.user;
       state.csrf = result.csrf;
       state.page = state.user.role === "teacher" ? "classes" : "map";
       state.planets = await api("/api/planets");
       await refresh();
     } catch (error) {
-      $("#login-error").textContent = error.message;
+      // The original form stays usable if any request fails during startup.
+      if (form.isConnected) {
+        state.user = null;
+        state.csrf = null;
+        errorLabel.textContent = error.message;
+      } else errorMessage(error);
     } finally {
       button.disabled = false;
+      button.textContent = t("login");
+      form.removeAttribute("aria-busy");
     }
   };
   document.querySelectorAll("[data-demo]").forEach(

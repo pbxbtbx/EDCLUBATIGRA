@@ -38,3 +38,11 @@ El blueprint usa un servicio Starter y disco de pago; se debe revisar el coste y
 Se añadieron `iniciar.py`, `INICIAR_WINDOWS.bat` e `INICIAR_MAC.command`. El lanzador usa el servidor local, abre el navegador del ordenador donde se ejecuta y reutiliza una instancia de ATIBOT ya disponible. No contrata hosting ni requiere las dependencias de producción. La opción `--no-browser` permite verificar el servicio sin abrir una ventana en el entorno cloud.
 
 Una prueba adicional con base temporal comprobó el arranque desde otro directorio, las respuestas HTTP, la creación de SQLite y la detección de una instancia existente. Resultado: **1 prueba nueva correcta**. El servicio local de esta instancia también respondió 200 al HTML y `/api/config` después de arrancar con el lanzador. Los archivos de Windows y Mac no se ejecutaron en sus respectivos sistemas operativos; el programa Python sí se comprobó en Linux. La dirección de loopback de esta máquina no es accesible desde el ordenador del usuario.
+
+## Corrección del acceso y compatibilidad con Windows
+
+Se añadió un respaldo IANA 2026b de `Europe/Madrid` para instalaciones de Python sin zonas horarias del sistema (caso habitual en Windows). Antes, el acceso podía validar las credenciales y fallar al cargar el panel del alumno al calcular la semana. El origen exacto del fallo reportado por el usuario no se pudo confirmar desde su ordenador; esta incompatibilidad se verificó simulando la ausencia de las zonas del sistema.
+
+El formulario ahora muestra mensajes persistentes cuando faltan credenciales, da indicación de carga y recupera el botón tras los errores. Las peticiones tienen un límite de 15 segundos y explican si el servidor no responde o devuelve contenido distinto de la API. Si falla la carga del panel, se limpia el estado de acceso parcial para que el formulario siga siendo utilizable.
+
+Resultados: **26 pruebas de servidor/WSGI/lanzador correctas** (incluyendo panel de alumno y filtros docentes sin zonas IANA del sistema). El recorrido Chromium de seis modalidades pasó en **16,973 segundos**, entrando con el botón real y credenciales escritas, y comprobando campos vacíos, conexión abortada, contraseña incorrecta y reintento correcto. No se ejecutó Windows ni Python 3.15 directamente; el respaldo de zona horaria se validó en pruebas de regresión sobre Linux.

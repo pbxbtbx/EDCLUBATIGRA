@@ -4,7 +4,7 @@ Aplicación de mecanografía educativa ejecutable, con backend real, autenticaci
 
 ## Ejecutar en tu ordenador
 
-Requiere **Python 3.11 o posterior**, SQLite incluido en Python y la base de zonas horarias IANA del sistema. No necesita Node, paquetes de Python, claves API, CDN ni servicios externos para funcionar.
+Requiere **Python 3.11 o posterior**, con SQLite incluido. Se incluye un respaldo de la zona horaria IANA de Madrid para Windows. No necesita Node, paquetes de Python, claves API, CDN ni servicios externos para funcionar.
 
 ```bash
 cd /workspace/EDCLUBATIGRA
@@ -30,6 +30,15 @@ El proceso debe permanecer activo. Su reinicio conserva los datos en `data/atigr
 Requiere Python 3.11 o superior instalado en ese ordenador. No necesita hosting, cuenta de Render ni conexión para usar las misiones. El progreso se guarda en `data/`; conserva esa carpeta al actualizar. Si el navegador no se abre, escribe `http://127.0.0.1:8000` en Chrome, Edge o Firefox **en ese mismo ordenador**. Esta dirección no es un enlace público y solo funciona donde está arrancado el programa.
 
 En Mac puedes ejecutar `python3 iniciar.py` en la carpeta del proyecto o usar `INICIAR_MAC.command` si el sistema permite ejecutarlo. `python iniciar.py --port 8001` permite elegir otro puerto. `--no-browser` arranca sin abrir una ventana de navegador, útil para comprobaciones automáticas.
+
+## Si el botón de entrada parece no responder
+
+1. Usa la versión actualizada y cierra la ventana de inicio anterior antes de volver a ejecutar `INICIAR_WINDOWS.bat`.
+2. No abras `web/index.html` directamente: entra desde el navegador que abre el lanzador.
+3. Escribe `nova.demo` y `AtigraDemo2026!`, o pulsa el acceso rápido **Alumno · Nova**.
+4. El formulario muestra un mensaje si falta algún dato, las credenciales son incorrectas o el servidor no responde. Si ocurre, copia ese mensaje para poder diagnosticarlo.
+
+La aplicación incluye la zona horaria de Madrid de respaldo para Windows; no hace falta instalar `tzdata` por separado. Conserva tu carpeta `data/` al actualizar para mantener el progreso.
 
 ## Demostración
 
