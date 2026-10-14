@@ -102,6 +102,24 @@ class BrowserFlow(unittest.TestCase):
                         page.locator("#login-form button[type=submit]").is_enabled()
                     )
                     page.locator("#login-form [name=password]").fill("AtigraDemo2026!")
+                    page.route(
+                        "**/api/student",
+                        lambda route: route.fulfill(
+                            status=400,
+                            content_type="application/json",
+                            body='{"error":"invalid_input","reference":"test1234"}',
+                        ),
+                    )
+                    page.locator("#login-form button[type=submit]").click()
+                    page.wait_for_function(
+                        "() => document.querySelector('#login-error').textContent.includes('La contraseña se ha aceptado')"
+                    )
+                    self.assertIn("test1234", page.locator("#login-error").inner_text())
+                    self.assertIsNone(page.evaluate("state.user"))
+                    self.assertTrue(
+                        page.locator("#login-form button[type=submit]").is_enabled()
+                    )
+                    page.unroute("**/api/student")
                     page.locator("#login-form button[type=submit]").click()
                     page.wait_for_selector(".planet-card")
                     self.assertEqual(page.locator(".planet-card").count(), 6)

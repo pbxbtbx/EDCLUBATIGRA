@@ -29,7 +29,7 @@ El proceso debe permanecer activo. Su reinicio conserva los datos en `data/atigr
 
 Requiere Python 3.11 o superior instalado en ese ordenador. No necesita hosting, cuenta de Render ni conexión para usar las misiones. El progreso se guarda en `data/`; conserva esa carpeta al actualizar. Si el navegador no se abre, escribe `http://127.0.0.1:8000` en Chrome, Edge o Firefox **en ese mismo ordenador**. Esta dirección no es un enlace público y solo funciona donde está arrancado el programa.
 
-En Mac puedes ejecutar `python3 iniciar.py` en la carpeta del proyecto o usar `INICIAR_MAC.command` si el sistema permite ejecutarlo. `python iniciar.py --port 8001` permite elegir otro puerto. `--no-browser` arranca sin abrir una ventana de navegador, útil para comprobaciones automáticas.
+En Mac puedes ejecutar `python3 iniciar.py` en la carpeta del proyecto o usar `INICIAR_MAC.command` si el sistema permite ejecutarlo. `python iniciar.py --port 8001` permite elegir otro puerto. `--no-browser` arranca sin abrir una ventana de navegador, útil para comprobaciones automáticas. El lanzador comprueba la versión y la carpeta de la instancia antes de reutilizarla. Si el puerto está ocupado por otra versión, elige automáticamente otro y abre esa dirección: usa la pestaña nueva que abre el programa.
 
 ## Si el botón de entrada parece no responder
 

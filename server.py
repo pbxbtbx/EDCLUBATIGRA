@@ -10,6 +10,20 @@ from urllib.parse import urlparse, parse_qs
 
 ROOT = Path(__file__).resolve().parent
 DB_PATH = os.environ.get("ATIGRA_DB", str(ROOT / "data" / "atigra.sqlite3"))
+# Capture the loaded build, not files later replaced on disk while a process runs.
+BUILD_ID = hashlib.sha256(
+    b"".join(
+        (ROOT / name).read_bytes()
+        for name in (
+            "server.py",
+            "web/app.js",
+            "web/index.html",
+            "resources/timezones/Europe-Madrid.tzif",
+        )
+    )
+).hexdigest()[:12]
+INSTALLATION_ID = hashlib.sha256(str(ROOT.resolve()).encode()).hexdigest()[:12]
+
 MODES = ["castle", "race", "bridge", "dragon", "explore", "portal"]
 PLANETS = [
     ("Órbita del castillo", "Castle orbit", "⌂"),
@@ -597,7 +611,11 @@ class Handler(BaseHTTPRequestHandler):
                     db.execute("BEGIN IMMEDIATE")
                 if path == "/api/config" and self.command == "GET":
                     return self.send(
-                        {"demo": os.environ.get("ATIGRA_DEMO", "1") == "1"}
+                        {
+                            "demo": os.environ.get("ATIGRA_DEMO", "1") == "1",
+                            "build": BUILD_ID,
+                            "installation": INSTALLATION_ID,
+                        }
                     )
                 if path == "/api/login" and self.command == "POST":
                     return self.login(db, data)
@@ -645,8 +663,33 @@ class Handler(BaseHTTPRequestHandler):
                 return self.teacher(db, user, path, data)
         except Problem as e:
             self.send({"error": e.code}, e.status)
-        except (ValueError, TypeError, KeyError, json.JSONDecodeError, OverflowError):
-            self.send({"error": "invalid_input"}, 400)
+        except (
+            ValueError,
+            TypeError,
+            KeyError,
+            json.JSONDecodeError,
+            OverflowError,
+        ) as error:
+            # Internal failures on read-only dashboard requests are not form mistakes.
+            code, status = (
+                ("server_error", 500)
+                if self.command == "GET"
+                else ("invalid_input", 400)
+            )
+            trace = error.__traceback__
+            while trace and trace.tb_next:
+                trace = trace.tb_next
+            location = (
+                f"{Path(trace.tb_frame.f_code.co_filename).name}:{trace.tb_lineno}"
+                if trace
+                else "unknown"
+            )
+            reference = secrets.token_hex(4)
+            print(
+                f"ATIBOT error {reference}: {self.command} {path} {type(error).__name__} at {location}",
+                flush=True,
+            )
+            self.send({"error": code, "reference": reference}, status)
         except sqlite3.IntegrityError:
             self.send({"error": "conflict"}, 409)
         except Exception as e:

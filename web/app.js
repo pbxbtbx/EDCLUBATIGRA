@@ -1,6 +1,9 @@
 "use strict";
 const dictionary = {
   es: {
+    panelUnavailable:
+      "La contraseña se ha aceptado, pero el panel no se ha podido cargar. Cierra las ventanas antiguas y abre la versión actualizada desde INICIAR_WINDOWS.bat.",
+    loginReference: "Referencia del error",
     missingLogin: "Escribe tu usuario y tu contraseña para entrar.",
     signingIn: "Entrando…",
     backendUnavailable:
@@ -283,6 +286,9 @@ const dictionary = {
     badgeProgress: "Completa misiones para ganar reconocimientos.",
   },
   en: {
+    panelUnavailable:
+      "Your password was accepted, but the dashboard could not load. Close old windows and start the latest version with the local launcher.",
+    loginReference: "Error reference",
     missingLogin: "Enter your username and password to sign in.",
     signingIn: "Signing in…",
     backendUnavailable:
@@ -681,6 +687,7 @@ async function api(path, data) {
     if (!response.ok) {
       const error = new Error(t(result.error) || t("error"));
       error.code = result.error;
+      error.reference = result.reference;
       throw error;
     }
     return result;
@@ -758,8 +765,10 @@ function renderLogin() {
     button.disabled = true;
     button.textContent = t("signingIn");
     form.setAttribute("aria-busy", "true");
+    let credentialsAccepted = false;
     try {
       const result = await api("/api/login", credentials);
+      credentialsAccepted = true;
       state.user = result.user;
       state.csrf = result.csrf;
       state.page = state.user.role === "teacher" ? "classes" : "map";
@@ -770,7 +779,11 @@ function renderLogin() {
       if (form.isConnected) {
         state.user = null;
         state.csrf = null;
-        errorLabel.textContent = error.message;
+        errorLabel.textContent =
+          (credentialsAccepted ? t("panelUnavailable") : error.message) +
+          (error.reference
+            ? ` ${t("loginReference")}: ${error.reference}`
+            : "");
       } else errorMessage(error);
     } finally {
       button.disabled = false;

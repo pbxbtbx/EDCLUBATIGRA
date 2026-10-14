@@ -218,6 +218,21 @@ class ApiTests(unittest.TestCase):
             {"run_id": r["run_id"], "events": events, "active_ms": seconds * 1000},
         )
 
+    def test_internal_dashboard_failure_is_not_a_form_error(self):
+        import contextlib, io
+        from unittest.mock import patch
+
+        log = io.StringIO()
+        with patch(
+            "server.student_levels", side_effect=KeyError("private-value-not-for-logs")
+        ), contextlib.redirect_stdout(log):
+            status, result = self.student.request("/api/student")
+        self.assertEqual(status, 500)
+        self.assertEqual(result["error"], "server_error")
+        self.assertEqual(len(result["reference"]), 8)
+        self.assertNotIn("private-value", log.getvalue())
+        self.assertNotIn("private-value", json.dumps(result))
+
     def test_student_login_dashboard_without_system_timezones(self):
         from unittest.mock import patch
         from zoneinfo import ZoneInfo, ZoneInfoNotFoundError

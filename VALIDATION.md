@@ -46,3 +46,11 @@ Se añadió un respaldo IANA 2026b de `Europe/Madrid` para instalaciones de Pyth
 El formulario ahora muestra mensajes persistentes cuando faltan credenciales, da indicación de carga y recupera el botón tras los errores. Las peticiones tienen un límite de 15 segundos y explican si el servidor no responde o devuelve contenido distinto de la API. Si falla la carga del panel, se limpia el estado de acceso parcial para que el formulario siga siendo utilizable.
 
 Resultados: **26 pruebas de servidor/WSGI/lanzador correctas** (incluyendo panel de alumno y filtros docentes sin zonas IANA del sistema). El recorrido Chromium de seis modalidades pasó en **16,973 segundos**, entrando con el botón real y credenciales escritas, y comprobando campos vacíos, conexión abortada, contraseña incorrecta y reintento correcto. No se ejecutó Windows ni Python 3.15 directamente; el respaldo de zona horaria se validó en pruebas de regresión sobre Linux.
+
+## Diagnóstico de acceso y servidores antiguos
+
+El lanzador ya no considera suficiente que haya una página ATIBOT en el puerto 8000. Compara la versión cargada y un identificador de instalación, y selecciona un puerto libre si encuentra un proceso diferente o antiguo. No detiene procesos ajenos ni borra datos. Comprueba la zona horaria y prepara SQLite antes de abrir el navegador.
+
+Un fallo interno al leer el panel ya no se presenta como «Revisa los campos del formulario». En esos fallos se devuelve una referencia aleatoria y se registra el tipo de excepción y la ubicación del código sin los valores del formulario. La interfaz distingue credenciales rechazadas de credenciales aceptadas con fallo posterior de carga.
+
+Resultado: **28 pruebas correctas**. Las nuevas regresiones simulan un servidor antiguo aún activo (se abre el nuevo en otro puerto y el antiguo permanece intacto) y un fallo interno del panel (500 con referencia, sin exponer el valor de la excepción). El recorrido Chromium completo pasó en **17,925 segundos**, incluida la simulación del mensaje reportado después de aceptar la contraseña y un reintento correcto. No se verificó el ordenador del usuario: la causa concreta de su ejecución sigue sin confirmarse; se comprobó que utiliza una dirección local en el puerto 8000.

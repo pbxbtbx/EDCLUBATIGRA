@@ -12,12 +12,14 @@ import server
 
 
 def is_academy(url):
+    """Only reuse this installation and loaded build, never a stale server."""
     try:
-        with urllib.request.urlopen(url + "/api/config", timeout=2) as response:
+        with urllib.request.urlopen(url + "/api/config", timeout=1) as response:
             config = json.loads(response.read())
-        with urllib.request.urlopen(url, timeout=2) as response:
-            page = response.read(10000)
-        return isinstance(config.get("demo"), bool) and b"ATIBOT Academy" in page
+        return (
+            config.get("build") == server.BUILD_ID
+            and config.get("installation") == server.INSTALLATION_ID
+        )
     except (OSError, ValueError, urllib.error.URLError):
         return False
 
@@ -29,21 +31,33 @@ def main():
     args = parser.parse_args()
     if sys.version_info < (3, 11):
         raise SystemExit("Necesitas Python 3.11 o superior.")
-    url = f"http://127.0.0.1:{args.port}"
-    if is_academy(url):
-        print("ATIBOT ya esta funcionando en este ordenador: " + url, flush=True)
-        if not args.no_browser:
-            webbrowser.open(url)
-        return
+    if not 1 <= args.port <= 65535:
+        raise SystemExit("El puerto debe estar entre 1 y 65535.")
+    print("ATIBOT - version " + server.BUILD_ID, flush=True)
+    for port in range(args.port, min(args.port + 20, 65536)):
+        url = f"http://127.0.0.1:{port}"
+        if is_academy(url):
+            print("ATIBOT ya esta funcionando en este ordenador: " + url, flush=True)
+            if not args.no_browser:
+                webbrowser.open(url)
+            return
+        try:
+            http = server.make_server("127.0.0.1", port)
+            break
+        except OSError as error:
+            if error.errno not in (48, 98, 10048):
+                raise
+            print(
+                f"El puerto {port} pertenece a otra instancia o version. Buscando un puerto libre...",
+                flush=True,
+            )
+    else:
+        raise SystemExit(
+            "No hay un puerto local libre. Cierra las ventanas antiguas de ATIBOT y vuelve a iniciar."
+        )
+    # Check critical runtime requirements before opening a browser or accepting logins.
+    server.madrid_timezone()
     server.seed()
-    try:
-        http = server.make_server("127.0.0.1", args.port)
-    except OSError as error:
-        if error.errno in (48, 98, 10048):
-            raise SystemExit(
-                f"El puerto {args.port} esta ocupado. Prueba: python iniciar.py --port {args.port + 1}"
-            ) from error
-        raise
     print("\nATIBOT listo en tu ordenador: " + url, flush=True)
     print("Mantén esta ventana abierta. Pulsa Ctrl+C para detenerlo.", flush=True)
     print("Los datos se guardan en: " + str(server.DB_PATH), flush=True)
