@@ -1,2 +1,146 @@
-# EDCLUBATIGRA
-edclubatigra
+# ATIBOT Academy · Atigra Makers
+
+Aplicación de mecanografía educativa ejecutable, con backend real, autenticación, base de datos y gestión docente. Identidad magenta `#cc0b4e`, verde `#45ae46`, superficies espaciales y un **ATIBOT provisional dibujado en CSS**, sustituible y no oficial.
+
+## Ejecutar
+
+Requiere **Python 3.11 o posterior**, SQLite incluido en Python y la base de zonas horarias IANA del sistema. No necesita Node, paquetes de Python, claves API, CDN ni servicios externos para funcionar.
+
+```bash
+cd /workspace/EDCLUBATIGRA
+python3 server.py
+```
+
+El servidor escucha en el puerto 8000, solo en la máquina local por defecto. Para un alojamiento accesible desde otra máquina:
+
+```bash
+python3 server.py --host 0.0.0.0 --port 8000
+```
+
+El proceso debe permanecer activo. Su reinicio conserva los datos en `data/atigra.sqlite3`. `python3 server.py --init-only` inicializa sin arrancar y es repetible: no sobrescribe usuarios ni resultados existentes. El directorio `data/` no se versiona.
+
+## Demostración
+
+Al inicializar por primera vez se crean una clase y tres alumnos **ficticios**, sin intentos ni puntuaciones inventados:
+
+| Rol | Usuario | Contraseña de demostración |
+| --- | --- | --- |
+| Docente | `profe.demo` | `AtigraDemo2026!` |
+| Alumno | `nova.demo` | `AtigraDemo2026!` |
+| Alumno | `leo.demo` | `AtigraDemo2026!` |
+| Alumno | `luna.demo` | `AtigraDemo2026!` |
+
+El docente puede crear clases y cuentas, comunicar las credenciales privadamente, mover alumnos, retirarlos de una clase y restablecer contraseñas. Los alumnos no necesitan correo. Cada alumno pertenece a una clase como máximo; sus datos históricos sobreviven a los cambios de clase. El correo es un identificador alternativo de acceso: no se envían mensajes ni se ofrece recuperación por correo.
+
+## Arquitectura
+
+- `server.py`: API HTTP, autorización por propietario, sesiones, validación de eventos, puntuación, clasificación e inicialización.
+- `web/`: interfaz JavaScript, HTML y CSS adaptable a ordenador y tablet. Sin compilación ni bibliotecas externas.
+- SQLite con claves foráneas y WAL: usuarios, clases, inscripciones, planetas, niveles, asignaciones, sesiones, ejecuciones, intentos y snapshots semanales.
+- `manage.py`: administración local de cuentas docentes y restablecimiento de contraseñas.
+- `tests/`: pruebas de reglas, API, persistencia, permisos y flujo de navegador.
+
+Esta arquitectura permite una primera versión local verificable con una instalación mínima. `ThreadingHTTPServer` es un servidor de desarrollo: para uso público hay que añadir terminación HTTPS, supervisión, límites de tráfico, copias de seguridad y un servidor HTTP de producción o sustituir la capa HTTP manteniendo las reglas y datos. No se ha desplegado en un servicio externo.
+
+## Funcionalidades
+
+### Alumno
+
+- Mapa de seis planetas, estados disponibles/bloqueados/completados y continuación de la siguiente misión.
+- **36 niveles: 18 en español y 18 en inglés**, con fila central, superior, inferior, palabras, mayúsculas/signos y frases. La clase demo empieza con los 18 españoles; el docente puede asignar los ingleses o contenido propio.
+- Seis modalidades que comparten entrada, cronómetro, historial y reglas, con interacciones visuales distintas:
+  - Castillo: completar palabras carga un escudo y aleja un meteorito.
+  - Carrera: completar palabras mueve la nave hacia la meta.
+  - Puente: completar secuencias construye segmentos de runas y mueve a ATIBOT.
+  - Dragón: completar palabras recupera piezas y devuelve el color al dragón.
+  - Exploración: completar instrucciones mueve a ATIBOT y recoge recursos.
+  - Portal: cada carácter correcto carga y amplía el portal.
+- Práctica sin presión: sin cuenta atrás ni castigos; conserva el intento, pero no da valoración, desbloqueos ni puntos.
+- Historial, mejor intento por puntuación, evolución, precisión, PPM, tiempo activo, errores, ATIBOTS acumulados e insignias derivadas del progreso real.
+- Clasificación de clase opcional, historial semanal y reconocimientos individuales.
+- ES/EN en navegación, formularios, instrucciones y resultados. El idioma de interfaz no cambia el contenido asignado.
+
+### Docente
+
+- Crear/editar/archivar clases; activar u ocultar clasificación.
+- Crear cuentas con alias, usuario, contraseña y correo opcional. Mover/retirar alumnos y restablecer contraseñas sin leer las anteriores.
+- Crear niveles y editar los propios: nombre, planeta, modalidad, texto, idioma, PPM, precisión, orden y publicación/borrador. Los niveles comunes se copian antes de editar, evitando afectar a otros docentes.
+- Asignar a clase o alumno, ajustar orden, requisito explícito, precisión mínima y participación en reto semanal. Las asignaciones individuales prevalecen sobre las de clase para ese alumno.
+- Retirar una asignación conserva intentos. Eliminar contenido definitivamente es una acción diferente, permitida solo para niveles propios nunca usados ni asignados. Con historial, usar borrador.
+- Parámetros de valoración editables por clase: peso de precisión, umbrales y límites por precisión. Los intentos conservan la valoración calculada con la configuración de su ejecución.
+- Seguimiento por clase/alumno, filtros por fechas, misión e idioma, fecha de actividad, tiempo, errores, gráficos, historial y mejores resultados. Promedios de intentos completos evaluados separados de los promedios de mejores marcas; prácticas e incompletos identificados.
+- Exportación CSV de la selección, con protección frente a fórmulas introducidas como texto. Fechas de filtro y visualización en `Europe/Madrid`.
+
+## Motor y valoración
+
+El servidor reconstruye el texto a partir de eventos, valida sus tiempos y calcula los resultados; ignora puntuaciones enviadas por el cliente.
+
+- Precisión: entradas correctas / todas las entradas de caracteres × 100. Corregir con Retroceso no borra errores del contador.
+- PPM netas: (caracteres del texto completado / 5) / minutos activos.
+- Velocidad: `min(100, PPM / objetivo × 100)`.
+- Puntuación inicial: `0.75 × precisión + 0.25 × velocidad`.
+- Umbrales: 50, 65, 80 y 95 para 2, 3, 4 y 5 ATIBOTS.
+- Precisión <80%: máximo 2; <90%: máximo 3; 5 exige ≥97% y alcanzar el objetivo.
+- Desbloqueo inicial: superar 90% en el requisito previo. Una misión se puede repetir aunque otro intento ya la haya superado. Basta cualquier intento completo evaluado que cumpla el umbral.
+- El mejor intento es el de mayor puntuación; el historial completo permanece disponible. Las valoraciones acumuladas suman las mejores por misión.
+
+El cronómetro empieza en la primera entrada de carácter, se detiene al perder foco, ocultar pestaña o pulsar pausa y no permite escribir hasta reanudar. Retroceso elimina el último carácter; las teclas mantenidas no se repiten. La entrada compuesta se registra al finalizar la composición y se normaliza a Unicode NFC, incluyendo `ñ`, `Ñ`, tildes y signos. No se contabiliza la composición intermedia. El pegado y arrastre están bloqueados en la interfaz. Las entradas incorrectas se muestran y se corrigen con Retroceso. Un abandono registra el intento incompleto sin valoración ni puntos. Cerrar la pestaña bruscamente puede dejar una ejecución sin intento final; nunca otorga puntos.
+
+La clasificación suma **un mejor intento completo por alumno y misión durante la semana**, solo si la misión participa en el reto. No acumula puntos por repetir. Ordena por puntuación, precisión media de los mejores intentos y menor tiempo activo. La semana es lunes a domingo en `Europe/Madrid`, también en cambios de horario de verano. Retirar una misión o desmarcar el reto afecta a la semana actual; las semanas anteriores conservan la elegibilidad registrada al completar los intentos y se materializan en snapshots al consultar su historial. Ocultar la tabla no elimina los datos.
+
+## Configuración y administración
+
+Variables opcionales documentadas en `.env.example`. No hay secretos requeridos para la ejecución local. Exportarlas en el shell: **el servidor no carga automáticamente `.env`**.
+
+| Variable | Valor inicial | Uso |
+| --- | --- | --- |
+| `ATIGRA_DB` | `data/atigra.sqlite3` junto al código | Archivo de datos; ruta absoluta recomendada fuera de desarrollo |
+| `ATIGRA_HOST` | `127.0.0.1` | Dirección de escucha |
+| `ATIGRA_PORT` | `8000` | Puerto |
+| `ATIGRA_DEMO` | `1` | Crear datos demo en base nueva y mostrar atajos de acceso |
+| `ATIGRA_SECURE_COOKIE` | `0` | `1` cuando el servicio se sirve exclusivamente mediante HTTPS |
+
+Crear una instancia sin cuentas demo y añadir un docente:
+
+```bash
+export ATIGRA_DB=/ruta/persistente/atigra.sqlite3
+export ATIGRA_DEMO=0
+python3 manage.py init-clean
+python3 manage.py create-teacher --username docente --alias Comandante
+python3 server.py
+```
+
+La contraseña se solicita sin eco, con confirmación; no se recibe como argumento ni se guarda en texto plano. Para rotar una contraseña, también la del docente demo:
+
+```bash
+python3 manage.py reset-password --username profe.demo
+```
+
+`ATIGRA_DEMO=0` **no elimina cuentas demo existentes**. Para una instalación nueva sin ellas, usar un archivo de base nuevo. Evitar publicar una base con las credenciales conocidas de demostración. Las copias de SQLite deben hacerse con su API de backup, o con el servidor detenido; no copiar solo el archivo principal mientras WAL está activo.
+
+## Seguridad y límites concretos
+
+Contraseñas con scrypt y sal aleatoria; sesión opaca aleatoria en cookie HttpOnly/SameSite=Strict, vencimiento de 12 horas, CSRF en mutaciones, comprobación de origen y limitación básica de intentos de acceso. Restablecer contraseña revoca sesiones y ejecuciones abiertas. Las operaciones de escritura se serializan en transacciones para impedir dobles envíos concurrentes. Los recursos y la API solo usan el mismo origen. No hay publicidad, chat ni perfiles públicos.
+
+La API comprueba el rol y propietario de clase/alumno/contenido, y los alumnos solo reciben sus asignaciones e intentos. La tabla semanal solo devuelve alias y métricas. Los controles antimanipulación comprueban propiedad y uso único de la ejecución, texto exacto completado, eventos de un carácter, tiempos ordenados, duración frente al reloj del servidor y velocidad máxima plausible (220 PPM). **Esto no demuestra que una persona haya tecleado: un cliente modificado puede fabricar eventos plausibles.** Es protección básica, no un sistema competitivo resistente a automatización.
+
+ATIBOT es provisional. Se usan dibujos CSS y algunos pictogramas del sistema; no se incorporaron recursos oficiales porque el repositorio no los contiene. El estilo retro utiliza fuentes monoespaciadas locales; no necesita descargar fuentes. Sonido de recompensa generado localmente, inicialmente silenciado; movimiento reducible y respetando la preferencia del sistema. Foco visible, enlaces de salto, etiquetas y diálogo con confinamiento de foco. No se ha realizado una auditoría exhaustiva con lector de pantalla ni evaluación pedagógica con menores.
+
+## Comprobaciones
+
+Pruebas sin dependencias:
+
+```bash
+python3 -m unittest discover -s tests -v
+node --check web/app.js  # opcional: Node solo para validar sintaxis durante desarrollo
+```
+
+Prueba de navegador opcional, con Playwright para Python y Chromium instalado:
+
+```bash
+python3 tests/browser_smoke.py
+```
+
+La prueba usa `/usr/bin/chromium` disponible en este entorno, crea una base temporal y arranca/detiene su propio servidor. En una máquina sin Playwright/Chromium se marca explícitamente como omitida; no valida el navegador allí. Las pruebas de servidor también usan una base temporal. No cambian la base demo ni los resultados del usuario.
+
+Validado en el entorno actual: 18 pruebas de reglas/API (valoración, límites, errores corregidos, Unicode, semanas/DST, acceso, CSRF, persistencia tras salir, cuentas, asignaciones, eliminación, prácticas, clasificación, antimanipulación, CSV y recursos). El flujo Chromium cubre seis modalidades, pausa real, Unicode, progreso tras volver a entrar, ES/EN, foco inicial, tablet, creación de clase/alumno/nivel y CSV. Los resultados finales de ejecución se registran en `VALIDATION.md`.
