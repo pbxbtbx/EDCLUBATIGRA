@@ -32,3 +32,9 @@ Se añadió `wsgi.py`, un adaptador de la misma API para Waitress, `requirements
 La suite se amplió a **23 pruebas correctas**, incluyendo transporte WSGI, autorización, CSRF, origen, métodos, cabeceras, inicialización sin cuentas demo y reinicialización sin sobrescribir credenciales. También se ejecutó el **servidor real Waitress** en una base temporal: acceso docente, clase, cuenta de alumno, asignación, misión con `ñ` y tilde, valoración, clasificación y reinicio conservando sesión e intentos. La prueba local utilizó cookies para HTTP; el blueprint activa cookies Secure para HTTPS en Render.
 
 El blueprint usa un servicio Starter y disco de pago; se debe revisar el coste y confirmar la contratación en Render. No se creó ningún servicio externo, no se introdujeron credenciales reales en el repositorio ni se validó una URL remota. El botón de Render abre la instalación, no una aplicación publicada.
+
+## Inicio local simplificado
+
+Se añadieron `iniciar.py`, `INICIAR_WINDOWS.bat` e `INICIAR_MAC.command`. El lanzador usa el servidor local, abre el navegador del ordenador donde se ejecuta y reutiliza una instancia de ATIBOT ya disponible. No contrata hosting ni requiere las dependencias de producción. La opción `--no-browser` permite verificar el servicio sin abrir una ventana en el entorno cloud.
+
+Una prueba adicional con base temporal comprobó el arranque desde otro directorio, las respuestas HTTP, la creación de SQLite y la detección de una instancia existente. Resultado: **1 prueba nueva correcta**. El servicio local de esta instancia también respondió 200 al HTML y `/api/config` después de arrancar con el lanzador. Los archivos de Windows y Mac no se ejecutaron en sus respectivos sistemas operativos; el programa Python sí se comprobó en Linux. La dirección de loopback de esta máquina no es accesible desde el ordenador del usuario.

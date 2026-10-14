@@ -2,14 +2,6 @@
 
 Aplicación de mecanografía educativa ejecutable, con backend real, autenticación, base de datos y gestión docente. Identidad magenta `#cc0b4e`, verde `#45ae46`, superficies espaciales y un **ATIBOT provisional dibujado en CSS**, sustituible y no oficial.
 
-## Usarla online, sin abrir Python
-
-[![Deploy to Render](https://render.com/images/deploy-to-render-button.svg)](https://render.com/deploy?repo=https://github.com/pbxbtbx/EDCLUBATIGRA)
-
-El botón inicia la instalación en tu cuenta de Render; **no es una aplicación ya desplegada**. La configuración incluye un servidor de producción Waitress y un disco persistente. Requiere un plan de pago de Render. Introduce una contraseña docente propia en los ajustes del alojamiento; no se habilitan cuentas demo online. Cuando Render termine, usa la URL HTTPS que muestre su panel.
-
-Instrucciones paso a paso: [DEPLOY.md](DEPLOY.md). También se puede alojar en Railway o en un servidor propio con volumen persistente.
-
 ## Ejecutar en tu ordenador
 
 Requiere **Python 3.11 o posterior**, SQLite incluido en Python y la base de zonas horarias IANA del sistema. No necesita Node, paquetes de Python, claves API, CDN ni servicios externos para funcionar.
@@ -26,6 +18,18 @@ python3 server.py --host 0.0.0.0 --port 8000
 ```
 
 El proceso debe permanecer activo. Su reinicio conserva los datos en `data/atigra.sqlite3`. `python3 server.py --init-only` inicializa sin arrancar y es repetible: no sobrescribe usuarios ni resultados existentes. El directorio `data/` no se versiona.
+
+## Inicio sencillo en Windows
+
+1. [Descarga el ZIP](https://github.com/pbxbtbx/EDCLUBATIGRA/archive/refs/heads/main.zip) y pulsa **Extraer todo**.
+2. Abre la carpeta extraída donde se encuentra `server.py`.
+3. Haz doble clic en **`INICIAR_WINDOWS.bat`**. No lo escribas dentro de la ventana de Python que muestra `>>>`.
+4. El navegador se abrirá automáticamente con la aplicación. Mantén abierta la ventana de inicio.
+5. Entra con `profe.demo` o `nova.demo`, contraseña `AtigraDemo2026!`.
+
+Requiere Python 3.11 o superior instalado en ese ordenador. No necesita hosting, cuenta de Render ni conexión para usar las misiones. El progreso se guarda en `data/`; conserva esa carpeta al actualizar. Si el navegador no se abre, escribe `http://127.0.0.1:8000` en Chrome, Edge o Firefox **en ese mismo ordenador**. Esta dirección no es un enlace público y solo funciona donde está arrancado el programa.
+
+En Mac puedes ejecutar `python3 iniciar.py` en la carpeta del proyecto o usar `INICIAR_MAC.command` si el sistema permite ejecutarlo. `python iniciar.py --port 8001` permite elegir otro puerto. `--no-browser` arranca sin abrir una ventana de navegador, útil para comprobaciones automáticas.
 
 ## Demostración
 
@@ -152,3 +156,11 @@ python3 tests/browser_smoke.py
 La prueba usa `/usr/bin/chromium` disponible en este entorno, crea una base temporal y arranca/detiene su propio servidor. En una máquina sin Playwright/Chromium se marca explícitamente como omitida; no valida el navegador allí. Las pruebas de servidor también usan una base temporal. No cambian la base demo ni los resultados del usuario.
 
 Validado en el entorno actual: 18 pruebas de reglas/API (valoración, límites, errores corregidos, Unicode, semanas/DST, acceso, CSRF, persistencia tras salir, cuentas, asignaciones, eliminación, prácticas, clasificación, antimanipulación, CSV y recursos). El flujo Chromium cubre seis modalidades, pausa real, Unicode, progreso tras volver a entrar, ES/EN, foco inicial, tablet, creación de clase/alumno/nivel y CSV. Los resultados finales de ejecución se registran en `VALIDATION.md`.
+
+## Usarla online, sin abrir Python
+
+[![Deploy to Render](https://render.com/images/deploy-to-render-button.svg)](https://render.com/deploy?repo=https://github.com/pbxbtbx/EDCLUBATIGRA)
+
+El botón inicia la instalación en tu cuenta de Render; **no es una aplicación ya desplegada**. La configuración incluye un servidor de producción Waitress y un disco persistente. Requiere un plan de pago de Render. Introduce una contraseña docente propia en los ajustes del alojamiento; no se habilitan cuentas demo online. Cuando Render termine, usa la URL HTTPS que muestre su panel.
+
+Instrucciones paso a paso: [DEPLOY.md](DEPLOY.md). También se puede alojar en Railway o en un servidor propio con volumen persistente.
