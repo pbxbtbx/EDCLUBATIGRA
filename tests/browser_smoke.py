@@ -197,9 +197,9 @@ class BrowserFlow(unittest.TestCase):
                         page.locator(f'.mission-chip[data-start="{i}"]').click()
                         page.locator("#assessed-start").click()
                         page.wait_for_selector("#type-input")
-                        self.assertEqual(
-                            page.locator(".scene-label").inner_text().lower(),
+                        self.assertIn(
                             page.evaluate("t(state.game.level.mode)").lower(),
+                            page.locator(".scene-label").inner_text().lower(),
                         )
                         text = page.evaluate("state.game.level.text")
                         if i == 1:

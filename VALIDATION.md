@@ -76,3 +76,21 @@ Se añadió «Probar un juego sin cuenta» en la entrada: una misión real de de
 Resultados: **30 pruebas de servidor/WSGI/lanzador correctas**, incluyendo acceso anónimo a los recursos y rechazo de rutas no autorizadas. El recorrido Chromium completo pasó en **20,541 segundos**, incluyendo el juego público, error corregido, pausa, ES/EN sin cambiar el ejercicio iniciado, resultado, repetición, salida, API privada 401 y verificación directa de cero ejecuciones/intentos tras la prueba. Después continuó con el acceso y las seis modalidades evaluadas, persistencia y gestión docente.
 
 Se inspeccionaron capturas de bienvenida y juego en 1440 px; se verificó ausencia de desbordamiento horizontal en la prueba a 768 px y en la bienvenida a 390 px. El alfa de la esquina del PNG es cero. Las expresiones son adaptaciones solicitadas del personaje proporcionado, no una afirmación de aprobación oficial adicional. Ninguna imagen se genera ni descarga de terceros mientras el usuario juega.
+
+## Escenas fluidas y variedad de niveles · 15 de octubre de 2026
+
+Se sustituyeron los desplazamientos por saltos por un controlador de escenas `motion.js` con un solo bucle `requestAnimationFrame`, interpolación dependiente del tiempo y referencias a nodos guardadas al montar. Las posiciones principales usan transformaciones; el texto y las teclas conservan sus nodos durante la escritura. Se calculan una sola vez los caracteres y los límites de palabras de cada ejercicio. El controlador cancela sus fotogramas, observadores y listeners al desmontar; la pausa congela también el escenario, y una pestaña oculta no programa fotogramas.
+
+Las seis escenas incorporan mecanismos visuales diferentes: escudos y meteoritos, nave vectorial y balizas, runas emergentes, dragón articulado y engranajes, recolección de cristales y anillos de portal. Los objetivos, el contador de palabras, los elementos de escena y la dificultad se muestran junto al ejercicio. La celebración final no se añade al tiempo activo del intento. Movimiento reducido manual o del sistema produce estados estáticos y elimina partículas y movimiento continuo.
+
+El selector Sala de juegos ofrece **18 retos de práctica libre** (seis juegos × tres dificultades), cada uno con nombre y texto propios en ES/EN. No se añadieron ni reemplazaron filas del catálogo curricular: se conservan los 36 niveles originales, asignaciones e intentos. Las misiones asignadas usan las nuevas escenas con una variante visual derivada de su orden. El catálogo libre no genera puntuaciones oficiales, intentos ni ejecuciones en SQLite. Repetir mantiene el reto y el idioma del ejercicio, aunque se cambie el idioma de la interfaz.
+
+Validación ejecutada:
+
+- **30 pruebas de servidor/WSGI/lanzador: correctas**, incluida la entrega de los nuevos archivos JavaScript.
+- `tests/browser_smoke.py`: recorrido completo correcto, **26,930 s**; seis modalidades evaluadas, práctica pública, errores corregidos, Unicode, pausa, persistencia, ES/EN, cuentas/clases/niveles y CSV.
+- `tests/browser_arcade.py`: correcto, **13,797 s**; finalización real de los 18 retos, diferencias de elementos por dificultad, textos ES/EN distintos, interpolación intermedia de la nave, conservación de nodos de texto, congelación de progreso/fase/cronómetro al pausar, un solo bucle activo, cero bucles en resultados o al salir, movimiento reducido manual y cambios de preferencia del sistema, repetición e idioma, y cero registros persistentes de la sala libre.
+- Revisión de capturas de las seis escenas y la sala; ausencia de desbordamiento horizontal a 768 px y 390 px. La sala de escritorio muestra los 18 accesos y usa un diálogo de 1040 px con navegación por teclado heredada del componente modal.
+- Sintaxis JavaScript y `git diff --check`: correctos.
+
+Las comprobaciones se hicieron en Chromium/Linux. No se midió una tasa de fotogramas garantizada en los equipos del alumnado ni se ejecutaron navegadores de Windows o Safari. La implementación interpola por tiempo y respeta las preferencias de movimiento; la fluidez efectiva también depende del dispositivo. No se ha desplegado una web pública por estos cambios.

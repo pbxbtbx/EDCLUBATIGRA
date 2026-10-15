@@ -609,7 +609,7 @@ class ApiTests(unittest.TestCase):
         self.assertEqual(
             self.other_client.request("/api/export?student_id=2")[1].count(b"\n"), 1
         )
-        for path in ("/", "/app.js", "/styles.css"):
+        for path in ("/", "/app.js", "/motion.js", "/arcade.js", "/styles.css"):
             self.assertEqual(Client(self.base).request(path)[0], 200)
         self.assertEqual(Client(self.base).request("/server.py")[0], 404)
         self.assertEqual(Client(self.base).request("/api/student")[0], 401)

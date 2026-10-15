@@ -17,6 +17,9 @@ BUILD_ID = hashlib.sha256(
         for name in (
             "server.py",
             "web/app.js",
+            "web/motion.js",
+            "web/arcade.js",
+            "web/styles.css",
             "web/index.html",
             "resources/timezones/Europe-Madrid.tzif",
             "web/assets/atigra-makers-oficial.svg",
@@ -590,6 +593,8 @@ class Handler(BaseHTTPRequestHandler):
                 names = {
                     "/": "index.html",
                     "/app.js": "app.js",
+                    "/motion.js": "motion.js",
+                    "/arcade.js": "arcade.js",
                     "/styles.css": "styles.css",
                     "/assets/atigra-makers-oficial.svg": "assets/atigra-makers-oficial.svg",
                     "/assets/atibot-expresiones.png": "assets/atibot-expresiones.png",

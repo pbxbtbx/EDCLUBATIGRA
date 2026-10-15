@@ -33,11 +33,30 @@ En Mac puedes ejecutar `python3 iniciar.py` en la carpeta del proyecto o usar `I
 
 ## Probar un juego sin iniciar sesión
 
-En la pantalla de entrada pulsa el botón verde **«Probar un juego sin cuenta»**. Se abre **Defensa del castillo orbital · Escudos de prueba**. Escribe el texto mostrado: cada palabra completa carga los escudos y aleja el meteorito; ATIBOT cambia de expresión durante la misión.
+En la pantalla de entrada pulsa el botón verde **«Probar un juego sin cuenta»**. Se abre **Defensa del castillo orbital · Escudo de aprendiz**. Escribe el texto mostrado: cada palabra completa carga los escudos y aleja el meteorito; ATIBOT cambia de expresión durante la misión.
 
 Se puede pausar, corregir con Retroceso, terminar y repetir. El resultado muestra precisión, PPM, tiempo y errores corregidos. La prueba funciona sin credenciales y **no crea usuarios, sesiones, ejecuciones ni intentos en la base de datos**, ni otorga puntos o desbloqueos. Las misiones del alumnado y su progreso persistente siguen requiriendo autenticación. La prueba es local en la memoria de esa pestaña y se pierde al cerrarla.
 
 La identidad incluye la frase «Si puedes imaginarlo y soñarlo, puedes crearlo y programarlo» en la bienvenida y en el pie de la aplicación. La interfaz inglesa tiene su traducción, conservando el idioma del texto de la misión iniciada.
+
+## Sala de juegos: más variedad y movimiento
+
+Pulsa **«Elegir juego y nivel»** en la bienvenida o **«Sala de juegos»** desde tu panel. Hay **18 retos de práctica libre**: seis modalidades con tres dificultades (Inicio, Aventura y Desafío), con textos distintos en español e inglés. Son adicionales al catálogo de 36 niveles del curso; no sustituyen asignaciones ni modifican el historial existente.
+
+| Juego | Qué ocurre al escribir | Cambios por dificultad |
+| --- | --- | --- |
+| Castillo orbital | Se cargan escudos, aparecen recompensas y se desvían meteoritos | 1, 2 o 3 meteoritos; palabras, instrucciones y una alerta completa |
+| Carrera de naves | La nave acelera suavemente, cruza balizas y llega a una estación | Más balizas y textos con rutas, números y signos |
+| Puente de runas | Los bloques emergen y ATIBOT cruza el abismo | 6, 10 o 14 runas; secuencias, frases y un enigma |
+| Dragón mecánico | Se recuperan engranajes, cobra color y mueve sus alas articuladas | Más piezas y descripciones cada vez más largas |
+| Exploración | ATIBOT avanza, recoge cristales y descubre una base | Más recursos; palabras, instrucciones y una bitácora |
+| Portal | Los anillos giran en sentidos distintos y se ilumina el núcleo | 2, 3 o 4 anillos; códigos, coordenadas y un texto final |
+
+El movimiento se interpola con un solo `requestAnimationFrame` por escena. Al pausar o perder foco se detienen tanto la escritura como el escenario. Al cambiar de juego se cancela el bucle anterior. La preferencia de movimiento reducido, incluido el ajuste del sistema, elimina el movimiento continuo y las partículas; el progreso se representa de forma estática. El texto y las teclas no se reconstruyen en cada pulsación, para evitar trabajo innecesario durante la escritura.
+
+Las misiones asignadas usan las mismas escenas mejoradas; su variante visual se deriva del orden (posiciones 0–5, 6–11 y 12 en adelante). Esto no cambia textos, requisitos ni puntuaciones del servidor. La celebración final no añade tiempo al cronómetro. La sala libre muestra métricas locales, pero no guarda intentos, puntos o desbloqueos. Repetir conserva el reto elegido y el idioma de su contenido.
+
+Prueba de navegador específica: `python3 tests/browser_arcade.py`. Necesita las mismas herramientas opcionales Playwright y Chromium que el recorrido original.
 
 ## Si el botón de entrada parece no responder
 
@@ -64,7 +83,7 @@ El docente puede crear clases y cuentas, comunicar las credenciales privadamente
 ## Arquitectura
 
 - `server.py`: API HTTP, autorización por propietario, sesiones, validación de eventos, puntuación, clasificación e inicialización.
-- `web/`: interfaz JavaScript, HTML y CSS adaptable a ordenador y tablet. Sin compilación ni bibliotecas externas.
+- `web/`: interfaz JavaScript, HTML y CSS, con catálogo libre en `arcade.js` y controlador de escenas en `motion.js`, adaptable a ordenador y tablet. Sin compilación ni bibliotecas externas.
 - SQLite con claves foráneas y WAL: usuarios, clases, inscripciones, planetas, niveles, asignaciones, sesiones, ejecuciones, intentos y snapshots semanales.
 - `manage.py`: administración local de cuentas docentes y restablecimiento de contraseñas.
 - `tests/`: pruebas de reglas, API, persistencia, permisos y flujo de navegador.

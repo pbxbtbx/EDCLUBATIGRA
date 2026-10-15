@@ -1,6 +1,23 @@
 "use strict";
 const dictionary = {
   es: {
+    arcade: "Sala de juegos",
+    arcadeIntro:
+      "Elige una aventura y su dificultad. 18 retos para practicar a tu ritmo, sin cuenta atrás.",
+    chooseGame: "Elegir juego y nivel",
+    tier1: "Inicio",
+    tier2: "Aventura",
+    tier3: "Desafío",
+    stageLabel: "Dificultad",
+    wordsDone: "Palabras completadas",
+    sceneObjective: "Objetivo de la misión",
+    goalCastle: "Carga los escudos y protege las torres",
+    goalRace: "Cruza las balizas y alcanza la estación",
+    goalBridge: "Construye las runas y cruza el abismo",
+    goalDragon: "Recupera engranajes y activa las alas",
+    goalExplore: "Recoge cristales y descubre la base",
+    goalPortal: "Sincroniza los anillos y abre el portal",
+
     motto: "Si puedes imaginarlo y soñarlo, puedes crearlo y programarlo",
     tryGame: "Probar un juego sin cuenta",
     tryGameTitle: "¡Activa los escudos con ATIBOT!",
@@ -303,6 +320,23 @@ const dictionary = {
     badgeProgress: "Completa misiones para ganar reconocimientos.",
   },
   en: {
+    arcade: "Game room",
+    arcadeIntro:
+      "Choose an adventure and its difficulty. 18 challenges to practice at your own pace, with no countdown.",
+    chooseGame: "Choose a game and level",
+    tier1: "Start",
+    tier2: "Adventure",
+    tier3: "Challenge",
+    stageLabel: "Difficulty",
+    wordsDone: "Completed words",
+    sceneObjective: "Mission objective",
+    goalCastle: "Charge the shields and protect the towers",
+    goalRace: "Cross the beacons and reach the station",
+    goalBridge: "Build the runes and cross the chasm",
+    goalDragon: "Recover gears and activate the wings",
+    goalExplore: "Collect crystals and discover the base",
+    goalPortal: "Synchronize the rings and open the portal",
+
     motto:
       "If you can imagine it and dream it, you can create it and program it",
     tryGame: "Try a game without an account",
@@ -744,26 +778,72 @@ function errorMessage(error) {
 function brand() {
   return `<div class="brand-wrap"><img class="brand-image" src="/assets/atigra-makers-oficial.svg" alt="Atigra Makers" width="456" height="163"><div class="brand-sub">ATIBOT ACADEMY</div></div>`;
 }
+let sceneAnimation = null;
+function stopSceneAnimation() {
+  sceneAnimation?.destroy();
+  sceneAnimation = null;
+}
+function openArcade() {
+  if (state.game) pauseGame();
+  const icons = {
+    castle: "⌂",
+    race: "➤",
+    bridge: "◇",
+    dragon: "⚙",
+    explore: "✦",
+    portal: "◎",
+  };
+  const content = `<p class="muted">${t("arcadeIntro")}</p><p class="notice">${t("guestHint")}</p><div class="arcade-grid">${AtigraArcade.modes
+    .map(
+      (mode) =>
+        `<article class="arcade-card mode-${mode}"><div class="arcade-icon" aria-hidden="true">${icons[mode]}</div><h3>${t(mode)}</h3><p>${t(mode + "Instruction")}</p><div class="arcade-levels">${AtigraArcade.levels
+          .filter((level) => level.mode === mode)
+          .map(
+            (level) =>
+              `<button class="arcade-level" data-stage-id="${level.id}" title="${esc(level.name[state.language])}"><span class="tier-number">${level.tier}</span><span><strong>${t("tier" + level.tier)}</strong><small>${esc(level.name[state.language])}</small></span><span aria-hidden="true">→</span></button>`,
+          )
+          .join("")}</div></article>`,
+    )
+    .join("")}</div>`;
+  const m = modal(t("arcade"), content);
+  m.element.querySelector(".modal").classList.add("arcade-modal");
+  m.element.querySelectorAll("[data-stage-id]").forEach(
+    (button) =>
+      (button.onclick = () => {
+        m.close();
+        startGuestGame(button.dataset.stageId);
+      }),
+  );
+}
 function renderGuestGame() {
   $("#app").innerHTML =
-    `<div class="guest-shell"><header class="guest-header">${brand()}<div class="row">${languagePicker()}<button class="secondary" id="guest-exit">${t("guestBack")}</button><button class="toggle" data-action="sound" aria-label="${t("sound")}" aria-pressed="${state.sound}">${state.sound ? "♫" : "♪̸"}</button><button class="toggle" data-action="motion" aria-label="${t("motion")}" aria-pressed="${state.motion}">◌</button></div></header><main id="main" tabindex="-1"><p class="notice">${t("guestHint")}</p>${gameView()}<blockquote class="brand-motto">${t("motto")}</blockquote><p class="small muted">⌨ ${t("physical")}</p></main></div>`;
+    `<div class="guest-shell"><header class="guest-header">${brand()}<div class="row">${languagePicker()}<button class="secondary" id="guest-library">${t("chooseGame")}</button><button class="secondary" id="guest-exit">${t("guestBack")}</button><button class="toggle" data-action="sound" aria-label="${t("sound")}" aria-pressed="${state.sound}">${state.sound ? "♫" : "♪̸"}</button><button class="toggle" data-action="motion" aria-label="${t("motion")}" aria-pressed="${state.motion}">◌</button></div></header><main id="main" tabindex="-1"><p class="notice">${t("guestHint")}</p>${gameView()}<blockquote class="brand-motto">${t("motto")}</blockquote><p class="small muted">⌨ ${t("physical")}</p></main></div>`;
   bindCommon();
   bindGame();
+  $("#guest-library").onclick = openArcade;
   $("#guest-exit").onclick = () => {
     if (state.game.result || confirm(t("guestAbandon"))) abandon();
   };
 }
-function startGuestGame() {
+function startGuestGame(
+  stageId = "castle-1",
+  contentLanguage = state.language,
+) {
+  const stage = AtigraArcade.levels.find((level) => level.id === stageId);
+  if (!stage) return toast(t("invalid_level"));
   state.game = {
     guest: true,
     practice: true,
     level: {
-      level_id: "guest-castle",
-      name: t("guestTitle"),
-      mode: "castle",
-      text: t("guestText").normalize("NFC"),
-      language: state.language,
-      target_wpm: 10,
+      level_id: "guest-" + stage.id,
+      stage_id: stage.id,
+      name: stage.name[contentLanguage],
+      mode: stage.mode,
+      text: stage.text[contentLanguage].normalize("NFC"),
+      language: contentLanguage,
+      target_wpm: stage.target_wpm,
+      tier: stage.tier,
+      planet_id: stage.planet_id,
     },
     events: [],
     buffer: [],
@@ -796,6 +876,7 @@ async function refresh() {
   render();
 }
 function render() {
+  stopSceneAnimation();
   document.documentElement.lang = state.language;
   document.body.classList.toggle("reduced", state.motion);
   if (!state.user) return state.game?.guest ? renderGuestGame() : renderLogin();
@@ -812,7 +893,7 @@ function render() {
         ["ranking", "♜"],
       ];
   $("#app").innerHTML =
-    `<div class="shell"><aside class="sidebar">${brand()}<div class="nav-label">${t(teacher ? "academy" : "journey")}</div><nav class="nav" aria-label="${t("academy")}">${nav.map(([page, icon]) => `<button data-page="${page}" class="${state.page === page ? "active" : ""}" ${state.page === page ? 'aria-current="page"' : ""}><span class="nav-icon" aria-hidden="true">${icon}</span>${t(page)}</button>`).join("")}</nav><div class="sidebar-bottom"><div class="bot-help">${bot("", "thinking")}<div><strong>${t("tip")}</strong><p>${t("tipText")}</p></div></div><div class="userbox"><div class="avatar">${esc(state.user.alias.slice(0, 1))}</div><div><div class="name">${esc(state.user.alias)}</div><div class="small muted">${t(state.user.role)}</div></div><button data-action="logout" class="toggle" title="${t("logout")}" aria-label="${t("logout")}">⇥</button></div></div></aside><div class="main-wrap"><header class="topbar"><span class="breadcrumb">ATIBOT Academy <span aria-hidden="true"> / </span> ${t(state.game ? "mission" : state.page)}</span><div class="top-actions"><span class="badge purple">✦ ${t("academy")}</span>${languagePicker()}<button class="toggle" data-action="sound" aria-label="${t("sound")}" title="${t("sound")}" aria-pressed="${state.sound}">${state.sound ? "♫" : "♪̸"}</button><button class="toggle" data-action="motion" aria-label="${t("motion")}" title="${t("motion")}" aria-pressed="${state.motion}">◌</button><button class="toggle" data-action="logout" aria-label="${t("logout")}" title="${t("logout")}">⇥</button></div></header><main id="main" tabindex="-1">${state.game ? gameView() : teacher ? teacherView() : studentView()}<footer class="footnote"><span>⌨ ${t("physical")}</span><span>${t("characterCredit")}</span></footer><blockquote class="brand-motto footer-motto">${t("motto")}</blockquote></main></div></div>`;
+    `<div class="shell"><aside class="sidebar">${brand()}<div class="nav-label">${t(teacher ? "academy" : "journey")}</div><nav class="nav" aria-label="${t("academy")}">${nav.map(([page, icon]) => `<button data-page="${page}" class="${state.page === page ? "active" : ""}" ${state.page === page ? 'aria-current="page"' : ""}><span class="nav-icon" aria-hidden="true">${icon}</span>${t(page)}</button>`).join("")}</nav><div class="sidebar-bottom"><div class="bot-help">${bot("", "thinking")}<div><strong>${t("tip")}</strong><p>${t("tipText")}</p></div></div><div class="userbox"><div class="avatar">${esc(state.user.alias.slice(0, 1))}</div><div><div class="name">${esc(state.user.alias)}</div><div class="small muted">${t(state.user.role)}</div></div><button data-action="logout" class="toggle" title="${t("logout")}" aria-label="${t("logout")}">⇥</button></div></div></aside><div class="main-wrap"><header class="topbar"><span class="breadcrumb">ATIBOT Academy <span aria-hidden="true"> / </span> ${t(state.game ? "mission" : state.page)}</span><div class="top-actions">${!state.game ? `<button class="secondary" data-arcade>${t("arcade")}</button>` : ""}<span class="badge purple">✦ ${t("academy")}</span>${languagePicker()}<button class="toggle" data-action="sound" aria-label="${t("sound")}" title="${t("sound")}" aria-pressed="${state.sound}">${state.sound ? "♫" : "♪̸"}</button><button class="toggle" data-action="motion" aria-label="${t("motion")}" title="${t("motion")}" aria-pressed="${state.motion}">◌</button><button class="toggle" data-action="logout" aria-label="${t("logout")}" title="${t("logout")}">⇥</button></div></header><main id="main" tabindex="-1">${state.game ? gameView() : teacher ? teacherView() : studentView()}<footer class="footnote"><span>⌨ ${t("physical")}</span><span>${t("characterCredit")}</span></footer><blockquote class="brand-motto footer-motto">${t("motto")}</blockquote></main></div></div>`;
   bindCommon();
   if (state.game) bindGame();
   else if (teacher) {
@@ -821,11 +902,13 @@ function render() {
   } else bindStudent();
 }
 function renderLogin() {
+  stopSceneAnimation();
   document.documentElement.lang = state.language;
   $("#app").innerHTML =
-    `<div class="login"><section class="login-space">${brand()}<div class="login-copy"><span class="eyebrow" style="color:#9edf9f">ATIBOT ACADEMY</span><h1>${t("loginTitle")}</h1><p>${t("loginIntro")}</p><blockquote class="brand-motto">${t("motto")}</blockquote></div><div class="login-art">${bot("big")}</div><div class="footnote"><span>${t("physical")}</span><span>${t("characterCredit")}</span></div></section><main id="main" class="login-form-wrap"><div class="login-language">${languagePicker()}</div><div class="login-form"><span class="eyebrow">${t("academy")}</span><h2>${t("welcomeBack")}</h2><p>${t("loginSubtitle")}</p><section class="try-game"><span class="eyebrow">${t("guestBadge")}</span><h3>${t("tryGameTitle")}</h3><p>${t("tryGameIntro")}</p><button class="primary guest-start" id="try-game">${t("tryGame")} →</button></section><form id="login-form" novalidate>${field("username", input("login", "", "text", 'required autocomplete="username"'))}${field("password", input("password", "", "password", 'required autocomplete="current-password" maxlength="200"'))}<p class="error" id="login-error" role="alert"></p><button class="primary" type="submit">${t("login")} <span aria-hidden="true">→</span></button></form>${state.demo ? `<div class="demo-box"><span class="eyebrow">${t("demo")}</span><p>${t("demoInfo")}</p><button data-demo="nova.demo">${t("student")} · Nova</button><button data-demo="profe.demo">${t("teacher")}</button><p>${t("loginDemoWarning")}</p></div>` : ""}<p class="small">⌨ ${t("physical")}</p></div></main></div>`;
+    `<div class="login"><section class="login-space">${brand()}<div class="login-copy"><span class="eyebrow" style="color:#9edf9f">ATIBOT ACADEMY</span><h1>${t("loginTitle")}</h1><p>${t("loginIntro")}</p><blockquote class="brand-motto">${t("motto")}</blockquote></div><div class="login-art">${bot("big")}</div><div class="footnote"><span>${t("physical")}</span><span>${t("characterCredit")}</span></div></section><main id="main" class="login-form-wrap"><div class="login-language">${languagePicker()}</div><div class="login-form"><span class="eyebrow">${t("academy")}</span><h2>${t("welcomeBack")}</h2><p>${t("loginSubtitle")}</p><section class="try-game"><span class="eyebrow">${t("guestBadge")}</span><h3>${t("tryGameTitle")}</h3><p>${t("tryGameIntro")}</p><button class="primary guest-start" id="try-game">${t("tryGame")} →</button><button class="secondary arcade-open" id="open-arcade">${t("chooseGame")} · 18 →</button></section><form id="login-form" novalidate>${field("username", input("login", "", "text", 'required autocomplete="username"'))}${field("password", input("password", "", "password", 'required autocomplete="current-password" maxlength="200"'))}<p class="error" id="login-error" role="alert"></p><button class="primary" type="submit">${t("login")} <span aria-hidden="true">→</span></button></form>${state.demo ? `<div class="demo-box"><span class="eyebrow">${t("demo")}</span><p>${t("demoInfo")}</p><button data-demo="nova.demo">${t("student")} · Nova</button><button data-demo="profe.demo">${t("teacher")}</button><p>${t("loginDemoWarning")}</p></div>` : ""}<p class="small">⌨ ${t("physical")}</p></div></main></div>`;
   bindCommon();
-  $("#try-game").onclick = startGuestGame;
+  $("#try-game").onclick = () => startGuestGame();
+  $("#open-arcade").onclick = openArcade;
   $("#login-form").onsubmit = async (event) => {
     event.preventDefault();
     const form = event.currentTarget;
@@ -879,6 +962,9 @@ function renderLogin() {
   );
 }
 function bindCommon() {
+  document
+    .querySelectorAll("[data-arcade]")
+    .forEach((button) => (button.onclick = openArcade));
   document.querySelectorAll("[data-language]").forEach(
     (button) =>
       (button.onclick = () => {
@@ -1213,6 +1299,7 @@ function pauseGame() {
     g.started = null;
   }
   g.paused = true;
+  sceneAnimation?.pause(true);
   if ($("#type-input")) {
     $("#type-input").disabled = true;
     $("#pause-button").textContent = t("resume");
@@ -1224,6 +1311,7 @@ function resumeGame() {
   const g = state.game;
   if (!g || g.result || g.saving) return;
   g.paused = false;
+  sceneAnimation?.pause(false);
   if (g.events.length) g.started = performance.now();
   $("#type-input").disabled = false;
   $("#pause-button").textContent = t("pause");
@@ -1232,79 +1320,150 @@ function resumeGame() {
   );
   $("#type-input").focus();
 }
-function scene(mode) {
-  const label = `<div class="scene-label">${t(mode)}</div>`,
-    ground = '<div class="scene-ground"></div>';
-  const contents = {
-    castle: `${ground}<div class="castle"><span class="castle-door"></span><span class="shield"></span></div><div class="meteor">☄</div><div class="scene-bot">${bot()}</div>`,
-    race: '<div class="race-track"></div><div class="race-ship">🚀</div><div class="finish">⚑</div>',
-    bridge: `${ground}<div class="bridge-blocks">${Array.from({ length: 10 }, () => '<span class="rune">✧</span>').join("")}</div><div class="bridge-traveler">${bot()}</div>`,
-    dragon: `${ground}<div class="dragon">🐉</div><div class="dragon-parts">${["⚙", "⌁", "⚙", "✦", "⚙"].map((x) => `<span>${x}</span>`).join("")}</div>`,
-    explore: `${ground}<div class="resource-grid">${["◇", "✦", "◇", "✦", "◇"].map((x) => `<span>${x}</span>`).join("")}</div><div class="explorer">${bot()}</div>`,
-    portal: `<div class="portal-ring"></div><div class="portal-bot">${bot()}</div><div class="charge"><span></span></div>`,
-  };
-  return `<div class="game-scene" id="game-scene" aria-label="${t(mode)}">${label}${contents[mode]}</div>`;
+function sceneTier(level = state.game.level) {
+  return Math.max(
+    1,
+    Math.min(
+      3,
+      Number(level.tier) || Math.floor((Number(level.position) || 0) / 6) + 1,
+    ),
+  );
 }
+function scene(mode) {
+  const tier = sceneTier(),
+    count = 2 + tier,
+    runes = 2 + tier * 4;
+  const rocket = `<svg viewBox="0 0 120 58" class="rocket-art" aria-hidden="true"><g class="engine-flame"><path d="M27 20 L0 29 L27 39Z" fill="#ffba5a"/><path d="M25 25 L8 29 L25 34Z" fill="#fff1bf"/></g><path d="M22 20 L9 8 L44 16 L62 9 Q94 7 115 29 Q94 51 62 49 L44 42 L9 50 L22 38Z" fill="#e5e8fc" stroke="#8f9abb" stroke-width="3"/><path d="M30 23 L71 23 L91 29 L71 35 L30 35Z" fill="#cc0b4e"/><circle cx="73" cy="29" r="11" fill="#202b50" stroke="#45ae46" stroke-width="3"/></svg>`;
+  const dragon = `<svg viewBox="0 0 300 180" class="mechanical-dragon" aria-hidden="true"><g class="dragon-wing wing-left"><path d="M138 84 L55 10 L77 77 L26 65 L78 120Z" fill="#a093df" stroke="#474f80" stroke-width="5"/><path d="M135 89 L62 21 L83 86 L40 73" fill="none" stroke="#d6cef4" stroke-width="3"/></g><g class="dragon-wing wing-right"><path d="M153 83 L224 5 L217 72 L276 49 L232 119Z" fill="#ba9ce3" stroke="#474f80" stroke-width="5"/></g><path d="M88 109 Q52 118 25 101 Q37 146 94 145" fill="#68b785" stroke="#304d65" stroke-width="5"/><ellipse cx="139" cy="120" rx="62" ry="37" fill="#72c692" stroke="#304d65" stroke-width="5"/><path d="M164 114 L184 66 L220 54 L250 77 L230 100 L204 91 L199 132Z" fill="#91d9a5" stroke="#304d65" stroke-width="5"/><path d="M187 65 L181 40 L204 54 M216 54 L230 35 L233 65" fill="#f4d291" stroke="#304d65" stroke-width="4"/><circle cx="221" cy="74" r="8" fill="white"/><circle cx="224" cy="75" r="4" fill="#242a4b"/><circle cx="134" cy="120" r="20" fill="#354364" stroke="#d6cdf6" stroke-width="4"/><path d="M118 120 H150 M134 104 V136" stroke="#80ddb1" stroke-width="5"/><path d="M107 143 L96 167 H123 L132 145 M156 145 L166 166 H190 L177 139" fill="#7287a2" stroke="#304d65" stroke-width="5"/></svg>`;
+  const ground =
+    '<div class="terrain-back"></div><div class="scene-ground"></div>';
+  const contents = {
+    castle: `${ground}<div class="castle"><span class="castle-door"></span><span class="castle-flag"></span><span class="shield"></span></div>${Array.from({ length: tier }, (_, i) => `<div class="meteor meteor-${i}"><span></span></div>`).join("")}<div class="scene-bot">${bot()}</div>`,
+    race: `<div class="race-track"></div>${Array.from({ length: count }, (_, i) => `<span class="race-gate" style="left:${22 + (i * 53) / Math.max(1, count - 1)}%"></span>`).join("")}<div class="race-ship">${rocket}</div><div class="finish station"><span></span></div>`,
+    bridge: `${ground}<div class="bridge-island island-left"></div><div class="bridge-island island-right"></div><div class="bridge-blocks">${Array.from({ length: runes }, (_, i) => `<span class="rune">${["◇", "✧", "⌁"][i % 3]}</span>`).join("")}</div><div class="bridge-traveler">${bot()}</div>`,
+    dragon: `${ground}<div class="dragon">${dragon}</div><div class="dragon-parts">${Array.from({ length: count }, () => "<span>⚙</span>").join("")}</div><div class="dragon-guide">${bot("", "thinking")}</div>`,
+    explore: `${ground}<div class="resource-grid">${Array.from({ length: count }, () => '<span class="crystal"></span>').join("")}</div><div class="explorer"><span class="collect-beam"></span>${bot()}</div><div class="explore-base"></div>`,
+    portal: `${Array.from({ length: tier + 1 }, (_, i) => `<div class="portal-ring ring-${i}"><i></i><b></b></div>`).join("")}<div class="portal-core"></div><div class="portal-bot">${bot()}</div><div class="charge"><span></span></div>`,
+  };
+  const goal = t("goal" + mode[0].toUpperCase() + mode.slice(1));
+  return `<div class="game-scene scene-${mode} tier-${tier} world-${state.game.level.planet_id || 1}" id="game-scene" data-mode="${mode}" data-tier="${tier}" aria-label="${t(mode)}"><div class="scene-stars" aria-hidden="true"></div><div class="scene-nebula" aria-hidden="true"></div><div class="scene-label">${t(mode)} <span class="scene-tier">${t("tier" + tier)}</span></div><div class="scene-art" aria-hidden="true">${contents[mode]}<div class="reward-burst">${Array.from({ length: 10 }, () => '<i class="reward-particle"></i>').join("")}</div></div><div class="scene-hud"><span>${goal}</span><span class="objective-lights" aria-hidden="true">${Array.from({ length: count }, () => '<i class="objective-light"></i>').join("")}</span></div></div><div class="mission-progress"><span id="mission-words">${t("wordsDone")}: 0</span><span class="stage-caption">${t("stageLabel")}: ${t("tier" + tier)}</span><div class="progress"><span id="mission-progress-bar"></span></div></div>`;
+}
+
 function gameView() {
   const g = state.game,
     l = g.level;
   if (g.result) return resultView();
   return `<div class="game-layout"><header class="game-heading"><div><span class="eyebrow">${t(g.guest ? "guestBadge" : g.practice ? "practice" : "evaluated")} · ${l.language.toUpperCase()}</span><h1 style="margin:8px 0 0">${esc(l.name)}</h1></div><button class="secondary" id="leave-button">${t("abandon")}</button></header><p class="small muted" style="margin:12px 0">${t(l.mode + "Instruction")}</p>${scene(l.mode)}<div class="game-stats"><div><strong id="game-accuracy" class="pixel">100%</strong><span>${t("accuracy")}</span></div><div><strong id="game-wpm" class="pixel">0</strong><span>${t("wpm")}</span></div><div><strong id="game-time" class="pixel">0:00</strong><span>${t("time")}</span></div><div><strong class="pixel">${l.target_wpm}</strong><span>${t("target")}</span></div></div><section class="typing-card"><div class="row" style="justify-content:space-between">${badge(t(g.guest ? "guestBadge" : g.practice ? "practice" : "evaluated"), g.practice ? "green" : "")}<button class="secondary" id="pause-button">${t(g.paused ? "resume" : "pause")}</button></div><div id="typing-text" class="typing-text" aria-label="${t("exerciseOnly")}"></div><label class="small muted" for="type-input">${t("typeHere")}</label><input id="type-input" class="type-input" type="text" autocomplete="off" autocorrect="off" spellcheck="false" autocapitalize="off" aria-describedby="typing-status" ${g.paused || g.saving ? "disabled" : ""}><p id="typing-status" class="small muted" role="status">${t(g.saving ? "saving" : g.paused ? "paused" : g.guest ? "guestHint" : g.practice ? "practiceHint" : "typeHint")}</p><p class="small muted">${t("backspaceHint")}</p><div id="retry-area"></div></section><div id="keyboard" class="keyboard" aria-hidden="true"></div></div>`;
 }
-function progressRatio() {
+function textMetrics() {
   const g = state.game;
-  let prefix = 0;
-  while (
-    prefix < g.buffer.length &&
-    g.buffer[prefix] === Array.from(g.level.text)[prefix]
-  )
-    prefix++;
-  if (g.level.mode === "portal")
-    return prefix / Array.from(g.level.text).length;
-  const text = g.level.text,
-    boundaries = [...text.matchAll(/\s/g)]
-      .map((m) => m.index + 1)
-      .concat(text.length);
-  return boundaries.filter((n) => n <= prefix).length / boundaries.length;
+  if (!g.textMetrics) {
+    const chars = Array.from(g.level.text),
+      boundaries = [];
+    chars.forEach((char, i) => {
+      if (/\s/.test(char)) boundaries.push(i + 1);
+    });
+    if (boundaries.at(-1) !== chars.length) boundaries.push(chars.length);
+    g.textMetrics = { chars, boundaries };
+  }
+  return g.textMetrics;
 }
+function progressRatio() {
+  const stats = typingProgress();
+  return state.game.level.mode === "portal"
+    ? stats.prefix / textMetrics().chars.length
+    : stats.words / stats.total;
+}
+
+function typingProgress() {
+  const g = state.game,
+    { chars, boundaries } = textMetrics();
+  let prefix = 0;
+  while (prefix < g.buffer.length && g.buffer[prefix] === chars[prefix])
+    prefix++;
+  return {
+    prefix,
+    words: boundaries.filter((n) => n <= prefix).length,
+    total: boundaries.length,
+  };
+}
+
 function updateGame() {
   const g = state.game;
   if (!g || g.result) return;
-  const text = Array.from(g.level.text);
-  $("#typing-text").innerHTML = text
-    .map(
-      (ch, i) =>
-        `<span class="${i < g.buffer.length ? (g.buffer[i] === ch ? "correct" : "wrong") : i === g.buffer.length ? "cursor" : ""}">${esc(ch)}</span>`,
-    )
-    .join("");
+  const text = textMetrics().chars,
+    typing = $("#typing-text");
+  if (!typing) return;
+  const classAt = (i) =>
+    i < g.buffer.length
+      ? g.buffer[i] === text[i]
+        ? "correct"
+        : "wrong"
+      : i === g.buffer.length
+        ? "cursor"
+        : "";
+  if (typing.dataset.ready !== "true") {
+    typing.innerHTML = text
+      .map((ch, i) => `<span class="${classAt(i)}">${esc(ch)}</span>`)
+      .join("");
+    typing.dataset.ready = "true";
+  } else {
+    const from = Math.max(
+      0,
+      Math.min(typing._length || 0, g.buffer.length) - 1,
+    );
+    const to = Math.min(
+      text.length,
+      Math.max(typing._length || 0, g.buffer.length) + 1,
+    );
+    for (let i = from; i < to; i++) typing.children[i].className = classAt(i);
+  }
+  typing._length = g.buffer.length;
   $("#type-input").value = g.buffer.join("");
-  const next = text[g.buffer.length] || "";
-  const rows =
-    g.level.language === "es"
-      ? ["qwertyuiop", "asdfghjklñ", "zxcvbnm"]
-      : ["qwertyuiop", "asdfghjkl", "zxcvbnm"];
-  $("#keyboard").innerHTML =
-    rows
-      .map(
-        (row) =>
-          `<div class="keyboard-row">${Array.from(row)
-            .map(
-              (ch) =>
-                `<span class="key ${["f", "j"].includes(ch) ? "home" : ""} ${ch === next.toLowerCase() ? "next" : ""}">${ch.toUpperCase()}</span>`,
-            )
-            .join("")}</div>`,
-      )
-      .join("") +
-    `<div class="keyboard-row"><span class="key space ${next === " " ? "next" : ""}">${t("space")}</span></div>`;
-  const ratio = progressRatio(),
+  const next = text[g.buffer.length] || "",
+    keyboard = $("#keyboard");
+  if (!keyboard.children.length) {
+    const rows =
+      g.level.language === "es"
+        ? ["qwertyuiop", "asdfghjklñ", "zxcvbnm"]
+        : ["qwertyuiop", "asdfghjkl", "zxcvbnm"];
+    keyboard.innerHTML =
+      rows
+        .map(
+          (row) =>
+            `<div class="keyboard-row">${Array.from(row)
+              .map(
+                (ch) =>
+                  `<span data-key="${ch}" class="key ${["f", "j"].includes(ch) ? "home" : ""}">${ch.toUpperCase()}</span>`,
+              )
+              .join("")}</div>`,
+        )
+        .join("") +
+      `<div class="keyboard-row"><span data-key=" " class="key space">${t("space")}</span></div>`;
+  }
+  keyboard
+    .querySelectorAll(".next")
+    .forEach((key) => key.classList.remove("next"));
+  const match =
+    next.toLowerCase() === "ñ"
+      ? "ñ"
+      : next
+          .toLowerCase()
+          .normalize("NFD")
+          .replace(/[\u0300-\u036f]/g, "");
+  [...keyboard.querySelectorAll("[data-key]")]
+    .find((key) => key.dataset.key === match)
+    ?.classList.add("next");
+  const stats = typingProgress(),
+    ratio =
+      g.level.mode === "portal"
+        ? stats.prefix / text.length
+        : stats.words / stats.total,
     scene = $("#game-scene");
-  scene.style.setProperty("--progress", ratio * 100 + "%");
-  scene.style.setProperty("--ship", 8 + ratio * 72 + "%");
-  scene.style.setProperty("--shield", 0.15 + ratio * 0.85);
-  scene.style.setProperty("--meteor", 65 + ratio * 25 + "%");
-  scene.style.setProperty("--damage", 1 - ratio);
-  scene.style.setProperty("--glow", ratio * 40 + "px");
-  scene.style.setProperty("--portal-scale", 0.8 + ratio * 0.25);
+  $("#mission-words").textContent =
+    `${t("wordsDone")}: ${stats.words} / ${stats.total}`;
+  $("#mission-progress-bar").style.width = `${ratio * 100}%`;
+  sceneAnimation?.setTarget(ratio, stats.words);
   const expression =
     ratio >= 0.75 ? "surprised" : ratio >= 0.25 ? "thinking" : "curious";
   scene.querySelectorAll(".bot").forEach((character) => {
@@ -1325,21 +1484,6 @@ function updateGame() {
       ),
     );
   });
-  scene
-    .querySelectorAll(".rune")
-    .forEach((el, i) =>
-      el.classList.toggle("built", i < Math.floor(ratio * 10)),
-    );
-  scene
-    .querySelectorAll(".dragon-parts span")
-    .forEach((el, i) =>
-      el.classList.toggle("repaired", i < Math.floor(ratio * 5)),
-    );
-  scene
-    .querySelectorAll(".resource-grid span")
-    .forEach((el, i) =>
-      el.classList.toggle("collected", i < Math.floor(ratio * 5)),
-    );
   updateGameStats();
 }
 function localStats() {
@@ -1347,21 +1491,20 @@ function localStats() {
   let buffer = [],
     correct = 0,
     typed = 0;
-  const errors = {};
+  const errors = {},
+    text = textMetrics().chars;
   for (const e of g.events) {
     if (e.kind === "backspace") {
       buffer.pop();
       continue;
     }
-    const expected = Array.from(g.level.text)[buffer.length];
+    const expected = text[buffer.length];
     if (e.char === expected) correct++;
     else errors[expected] = (errors[expected] || 0) + 1;
     typed++;
     buffer.push(e.char);
   }
-  const good = buffer.filter(
-    (ch, i) => ch === Array.from(g.level.text)[i],
-  ).length;
+  const good = buffer.filter((ch, i) => ch === text[i]).length;
   return {
     errors,
     accuracy: typed ? (correct / typed) * 100 : 100,
@@ -1381,7 +1524,7 @@ function recordChar(char) {
   char = char.normalize("NFC");
   if (
     Array.from(char).length !== 1 ||
-    g.buffer.length >= Array.from(g.level.text).length
+    g.buffer.length >= textMetrics().chars.length
   )
     return;
   if (g.started === null) g.started = performance.now();
@@ -1418,12 +1561,12 @@ function bindGame() {
     $("#result-repeat").onclick = () => {
       const { level, practice } = g;
       state.game = null;
-      if (g.guest) startGuestGame();
+      if (g.guest) startGuestGame(g.level.stage_id, g.level.language);
       else startGame(level.level_id, practice);
     };
     $("#result-back").onclick = () => {
       state.game = null;
-      state.page = "map";
+      state.page = state.user?.role === "teacher" ? "classes" : "map";
       if (!state.user) render();
       else refresh().catch(errorMessage);
     };
@@ -1496,6 +1639,16 @@ function bindGame() {
   $("#leave-button").onclick = () => {
     if (confirm(t(g.guest ? "guestAbandon" : "abandonConfirm"))) abandon("map");
   };
+  sceneAnimation = AtigraMotion.mount($("#game-scene"), {
+    reduced: state.motion,
+    paused: g.paused,
+    initial: g.sceneProgress || 0,
+    phase: g.scenePhase || 0,
+    onFrame: (progress, phase) => {
+      g.sceneProgress = progress;
+      g.scenePhase = phase;
+    },
+  });
   updateGame();
 }
 async function finishGame() {
@@ -1504,6 +1657,7 @@ async function finishGame() {
   $("#type-input").disabled = true;
   $("#typing-status").textContent = t("saving");
   try {
+    await sceneAnimation?.celebrate();
     if (g.guest) {
       const stats = localStats();
       g.result = {
@@ -1561,7 +1715,9 @@ async function abandon(page = "map", rerender = true) {
     }
   }
   state.game = null;
-  if (page) state.page = page;
+  if (page)
+    state.page =
+      state.user?.role === "teacher" && page === "map" ? "classes" : page;
   if (rerender) {
     if (!state.user) render();
     else await refresh();
