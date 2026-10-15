@@ -1,6 +1,38 @@
 "use strict";
 const dictionary = {
   es: {
+    rockets: "Esquiva los cohetes",
+    reaction: "Radar de reacción",
+    collect: "Recolector de letras",
+    platforms: "Plataformas programables",
+    rocketsInstruction:
+      "Pulsa la letra de la ruta segura o su botón. ATIBOT cambia de carril para esquivar los cohetes; los errores se cuentan y puedes reintentarlo.",
+    reactionInstruction:
+      "Observa la señal y elige su letra entre tres opciones. Puedes pulsar la tecla o el botón. Cada error cuenta, aunque lo corrijas.",
+    collectInstruction:
+      "Escribe las letras del recorrido para recogerlas y llevar a ATIBOT hasta la base.",
+    platformsInstruction:
+      "Completa cada secuencia para activar una plataforma y hacer saltar a ATIBOT.",
+    goalRockets: "Elige la letra de la ruta segura",
+    goalReaction: "Elige la misma letra que muestra la señal",
+    goalCollect: "Recoge las letras del recorrido",
+    goalPlatforms: "Activa las plataformas y alcanza la cima",
+    signal: "Señal",
+    signalsDone: "Señales superadas",
+    lettersDone: "Letras recogidas",
+    safeRoute: "Ruta segura",
+    tryAgainChoice: "¡Casi! Ese intento cuenta como error. Prueba otra letra.",
+    correctChoice: "¡Correcto! Siguiente señal.",
+    savedAttempts: "Intentos guardados: {n}",
+    practiceProgress: "Progreso de práctica",
+    practiceAttempts: "Intentos de práctica",
+    practiceProgressNote:
+      "Incluye las partidas de la sala de juegos. Los promedios usan las prácticas completadas y sus ATIBOTS no suman puntos de clase.",
+    savedPracticeHint:
+      "Tu progreso se guarda en tu cuenta. Tu profesor puede consultar intentos, precisión, velocidad, tiempo y errores en Informes. La práctica no suma puntos de clase.",
+    savedPracticeResult:
+      "Resultado guardado: puedes verlo en Progreso y tu profesor en Informes.",
+
     ratingTitle: "Tu valoración",
     speedPercent: "Velocidad del objetivo",
     practiceRatingNote: "Valoración de práctica: no suma puntos de clase.",
@@ -8,7 +40,7 @@ const dictionary = {
     nextTrial: "Avanzar de nivel",
     arcade: "Sala de juegos",
     arcadeIntro:
-      "Elige una aventura y su dificultad. 18 retos para practicar a tu ritmo, sin cuenta atrás.",
+      "Elige una aventura y su dificultad. 30 retos para practicar a tu ritmo, sin cuenta atrás.",
     chooseGame: "Elegir juego y nivel",
     tier1: "Inicio",
     tier2: "Aventura",
@@ -130,7 +162,7 @@ const dictionary = {
     typeHint:
       "Empieza con la primera letra. Retroceso corrige; los errores cuentan. No se admite pegar.",
     practiceHint:
-      "Sin presión ni puntuación. La práctica se guarda, pero no desbloquea misiones.",
+      "Sin presión: se guardan tu resultado y valoración. La práctica no suma puntos de clase ni desbloquea misiones.",
     time: "Tiempo activo",
     target: "Objetivo",
     resultTitle: "¡Misión completada!",
@@ -288,7 +320,7 @@ const dictionary = {
     challenge: "RETO DE LA SEMANA",
     active: "Activa",
     bestBots: "Mejor valoración",
-    allModes: "SEIS FORMAS DE APRENDER",
+    allModes: "DIEZ FORMAS DE APRENDER",
     clear: "Limpiar",
     go: "Vamos allá",
     exportNote:
@@ -325,6 +357,39 @@ const dictionary = {
     badgeProgress: "Completa misiones para ganar reconocimientos.",
   },
   en: {
+    rockets: "Dodge the rockets",
+    reaction: "Reaction radar",
+    collect: "Letter collector",
+    platforms: "Programmable platforms",
+    rocketsInstruction:
+      "Press the safe route letter or its button. ATIBOT changes lanes to dodge rockets; mistakes count and you can retry.",
+    reactionInstruction:
+      "Look at the signal and choose its letter from three options. Use a key or button. Every mistake counts, even after correcting it.",
+    collectInstruction:
+      "Type the letters along the trail to collect them and guide ATIBOT to the base.",
+    platformsInstruction:
+      "Complete each sequence to activate a platform and make ATIBOT jump.",
+    goalRockets: "Choose the safe route letter",
+    goalReaction: "Choose the letter shown by the signal",
+    goalCollect: "Collect the letters along the trail",
+    goalPlatforms: "Activate the platforms and reach the summit",
+    signal: "Signal",
+    signalsDone: "Signals cleared",
+    lettersDone: "Letters collected",
+    safeRoute: "Safe route",
+    tryAgainChoice:
+      "Almost! This attempt counts as a mistake. Try another letter.",
+    correctChoice: "Correct! Next signal.",
+    savedAttempts: "Saved attempts: {n}",
+    practiceProgress: "Practice progress",
+    practiceAttempts: "Practice attempts",
+    practiceProgressNote:
+      "Includes game room attempts. Averages use completed practices and their ATIBOTS do not add class points.",
+    savedPracticeHint:
+      "Your progress is saved to your account. Your teacher can see attempts, accuracy, speed, time and errors in Reports. Practice does not add class points.",
+    savedPracticeResult:
+      "Result saved: find it in Progress, and your teacher can see it in Reports.",
+
     ratingTitle: "Your rating",
     speedPercent: "Target speed",
     practiceRatingNote: "Practice rating: does not add class points.",
@@ -332,7 +397,7 @@ const dictionary = {
     nextTrial: "Next level",
     arcade: "Game room",
     arcadeIntro:
-      "Choose an adventure and its difficulty. 18 challenges to practice at your own pace, with no countdown.",
+      "Choose an adventure and its difficulty. 30 challenges to practice at your own pace, with no countdown.",
     chooseGame: "Choose a game and level",
     tier1: "Start",
     tier2: "Adventure",
@@ -454,7 +519,7 @@ const dictionary = {
     typeHint:
       "Start with the first letter. Backspace corrects; mistakes count. Pasting is blocked.",
     practiceHint:
-      "No pressure or score. Practice is saved, but does not unlock missions.",
+      "No pressure: your result and rating are saved. Practice does not add class points or unlock missions.",
     time: "Active time",
     target: "Target",
     resultTitle: "Mission accomplished!",
@@ -610,7 +675,7 @@ const dictionary = {
     challenge: "WEEKLY CHALLENGE",
     active: "Active",
     bestBots: "Best rating",
-    allModes: "SIX WAYS TO LEARN",
+    allModes: "TEN WAYS TO LEARN",
     clear: "Clear",
     go: "Let’s go",
     exportNote:
@@ -793,9 +858,25 @@ function stopSceneAnimation() {
   sceneAnimation?.destroy();
   sceneAnimation = null;
 }
+function arcadeProgress(stage) {
+  if (state.user?.role !== "student") return "";
+  const attempts = state.student.attempts.filter(
+    (attempt) => attempt.level_id === stage.level_ids[state.language],
+  );
+  const ratings = attempts
+    .map((a) => a.bots ?? a.feedback_bots)
+    .filter(Number.isFinite);
+  return attempts.length
+    ? `<small class="stage-history">${t("savedAttempts", { n: attempts.length })}${ratings.length ? ` · ${Math.max(...ratings)}/5 ATIBOTS` : ""}</small>`
+    : "";
+}
 function openArcade() {
   if (state.game) pauseGame();
   const icons = {
+    rockets: "➶",
+    reaction: "⌨",
+    collect: "✦",
+    platforms: "▰",
     castle: "⌂",
     race: "➤",
     bridge: "◇",
@@ -803,14 +884,19 @@ function openArcade() {
     explore: "✦",
     portal: "◎",
   };
-  const content = `<p class="muted">${t("arcadeIntro")}</p><p class="notice">${t("guestHint")}</p><div class="arcade-grid">${AtigraArcade.modes
+  const featured = ["rockets", "reaction", "collect", "platforms"];
+  const displayModes = [
+    ...featured,
+    ...AtigraArcade.modes.filter((mode) => !featured.includes(mode)),
+  ];
+  const content = `<p class="muted">${t("arcadeIntro")}</p><p class="notice">${t(state.user?.role === "student" ? "savedPracticeHint" : "guestHint")}</p><div class="arcade-grid">${displayModes
     .map(
       (mode) =>
         `<article class="arcade-card mode-${mode}"><div class="arcade-icon" aria-hidden="true">${icons[mode]}</div><h3>${t(mode)}</h3><p>${t(mode + "Instruction")}</p><div class="arcade-levels">${AtigraArcade.levels
           .filter((level) => level.mode === mode)
           .map(
             (level) =>
-              `<button class="arcade-level" data-stage-id="${level.id}" title="${esc(level.name[state.language])}"><span class="tier-number">${level.tier}</span><span><strong>${t("tier" + level.tier)}</strong><small>${esc(level.name[state.language])}</small></span><span aria-hidden="true">→</span></button>`,
+              `<button class="arcade-level" data-stage-id="${level.id}" title="${esc(level.name[state.language])}"><span class="tier-number">${level.tier}</span><span><strong>${t("tier" + level.tier)}</strong><small>${esc(level.name[state.language])}</small>${arcadeProgress(level)}</span><span aria-hidden="true">→</span></button>`,
           )
           .join("")}</div></article>`,
     )
@@ -821,7 +907,7 @@ function openArcade() {
     (button) =>
       (button.onclick = () => {
         m.close();
-        startGuestGame(button.dataset.stageId);
+        startArcadeStage(button.dataset.stageId);
       }),
   );
 }
@@ -834,6 +920,13 @@ function renderGuestGame() {
   $("#guest-exit").onclick = () => {
     if (state.game.result || confirm(t("guestAbandon"))) abandon();
   };
+}
+function startArcadeStage(stageId, language = state.language) {
+  const stage = AtigraArcade.levels.find((level) => level.id === stageId);
+  if (!stage) return;
+  if (state.user?.role === "student")
+    startGame(stage.level_ids[language], true);
+  else startGuestGame(stageId, language);
 }
 function startGuestGame(
   stageId = "castle-1",
@@ -1108,8 +1201,14 @@ function mapView() {
     )
     .join("")}</section></aside></div>`;
 }
-function chart(rows, key) {
-  const recent = completedAttempts(rows).slice(0, 14).reverse(),
+function chart(rows, key, practice = false) {
+  const recent = (
+      practice
+        ? rows.filter((a) => a.completed && a.practice)
+        : completedAttempts(rows)
+    )
+      .slice(0, 14)
+      .reverse(),
     max = key === "accuracy" ? 100 : Math.max(30, ...recent.map((a) => a[key]));
   return recent.length
     ? `<div class="chart" role="img" aria-label="${t(key)}: ${recent.map((a) => number(a[key])).join(", ")}">${recent.map((a, i) => `<div class="chart-bar" data-height="${Math.max(1, (a[key] / max) * 100)}" title="${date(a.created_at)}: ${number(a[key])}"><span>${number(a[key], 0)}</span></div>`).join("")}</div>`
@@ -1132,7 +1231,7 @@ function attemptTable(rows, teacher = false) {
     .map((k) => `<th>${t(k)}</th>`)
     .join(
       "",
-    )}</tr></thead><tbody>${rows.map((a) => `<tr>${teacher ? `<td>${esc(a.alias)}</td>` : ""}<td>${date(a.created_at)}</td><td>${esc(a.name || a.level_name)}</td><td>${esc(a.language).toUpperCase()}</td><td>${badge(t(!a.completed ? "abandoned" : a.practice ? "practice" : "finished"), a.completed ? "green" : "")}</td><td>${number(a.accuracy)}%</td><td>${number(a.wpm)}</td><td>${duration(a.active_ms)}</td><td>${a.score === null ? "—" : number(a.score)}</td><td>${a.bots === null ? "—" : bots(a.bots)}</td><td>${errorKeys(a.errors)}</td></tr>`).join("")}</tbody></table></div>`;
+    )}</tr></thead><tbody>${rows.map((a) => `<tr>${teacher ? `<td>${esc(a.alias)}</td>` : ""}<td>${date(a.created_at)}</td><td>${esc(a.name || a.level_name)}</td><td>${esc(a.language).toUpperCase()}</td><td>${badge(t(!a.completed ? "abandoned" : a.practice ? "practice" : "finished"), a.completed ? "green" : "")}</td><td>${number(a.accuracy)}%</td><td>${number(a.wpm)}</td><td>${duration(a.active_ms)}</td><td>${a.score === null && a.feedback_score == null ? "—" : number(a.score ?? a.feedback_score)}</td><td>${a.bots === null && a.feedback_bots == null ? "—" : bots(a.bots ?? a.feedback_bots)}</td><td>${errorKeys(a.errors)}</td></tr>`).join("")}</tbody></table></div>`;
 }
 function errorKeys(errors) {
   const object = typeof errors === "string" ? JSON.parse(errors) : errors;
@@ -1144,9 +1243,15 @@ function errorKeys(errors) {
       .join(" · ") || "—"
   );
 }
+function practiceProgress(rows) {
+  const practices = rows.filter((a) => a.practice);
+  if (!practices.length) return "";
+  const completed = practices.filter((a) => a.completed);
+  return `<section class="panel practice-progress"><h2>${t("practiceProgress")}</h2><p class="small muted">${t("practiceProgressNote")}</p><div class="stats">${stat(practices.length, "practiceAttempts", "↻")}${stat(number(mean(completed, "accuracy")) + "%", "accuracy", "◎")}${stat(number(mean(completed, "wpm")), "wpm", "↯")}${stat(new Set(completed.map((a) => a.level_id)).size, "levelsDone", "⚑")}</div><div class="form-grid"><div><h3>${t("accuracyEvolution")}</h3>${chart(practices, "accuracy", true)}</div><div><h3>${t("wpmEvolution")}</h3>${chart(practices, "wpm", true)}</div></div></section>`;
+}
 function progressView() {
   const s = state.student;
-  return `<div class="welcome"><div><span class="eyebrow">ATIBOT ACADEMY</span><h1>${t("progress")}</h1><p>${t("reportNote")}</p></div></div>${studentStats()}<div class="form-grid"><section class="panel"><h2>${t("accuracyEvolution")}</h2>${chart(s.attempts, "accuracy")}</section><section class="panel"><h2>${t("wpmEvolution")}</h2>${chart(s.attempts, "wpm")}</section></div><section class="panel"><h2>${t("best")}</h2>${attemptTable(bestAttempts(s.attempts))}</section><section class="panel"><h2>${t("history")}</h2>${s.attempts.length ? attemptTable(s.attempts) : `<p class="muted">${t("noHistory")}</p>`}</section>`;
+  return `<div class="welcome"><div><span class="eyebrow">ATIBOT ACADEMY</span><h1>${t("progress")}</h1><p>${t("reportNote")}</p></div></div>${studentStats()}${practiceProgress(s.attempts)}<div class="form-grid"><section class="panel"><h2>${t("accuracyEvolution")}</h2>${chart(s.attempts, "accuracy")}</section><section class="panel"><h2>${t("wpmEvolution")}</h2>${chart(s.attempts, "wpm")}</section></div><section class="panel"><h2>${t("best")}</h2>${attemptTable(bestAttempts(s.attempts))}</section><section class="panel"><h2>${t("history")}</h2>${s.attempts.length ? attemptTable(s.attempts) : `<p class="muted">${t("noHistory")}</p>`}</section>`;
 }
 function rankingView() {
   const s = state.student,
@@ -1309,6 +1414,9 @@ function pauseGame() {
     g.started = null;
   }
   g.paused = true;
+  document
+    .querySelectorAll(".decision-choice")
+    .forEach((button) => (button.disabled = true));
   sceneAnimation?.pause(true);
   if ($("#type-input")) {
     $("#type-input").disabled = true;
@@ -1321,6 +1429,9 @@ function resumeGame() {
   const g = state.game;
   if (!g || g.result || g.saving) return;
   g.paused = false;
+  document
+    .querySelectorAll(".decision-choice")
+    .forEach((button) => (button.disabled = false));
   sceneAnimation?.pause(false);
   if (g.events.length) g.started = performance.now();
   $("#type-input").disabled = false;
@@ -1353,6 +1464,21 @@ function scene(mode) {
     bridge: `${ground}<div class="bridge-island island-left"></div><div class="bridge-island island-right"></div><div class="bridge-blocks">${Array.from({ length: runes }, (_, i) => `<span class="rune">${["◇", "✧", "⌁"][i % 3]}</span>`).join("")}</div><div class="bridge-traveler">${bot()}</div>`,
     dragon: `${ground}<div class="dragon">${dragon}</div><div class="dragon-parts">${Array.from({ length: count }, () => "<span>⚙</span>").join("")}</div><div class="dragon-guide">${bot("", "thinking")}</div>`,
     explore: `${ground}<div class="resource-grid">${Array.from({ length: count }, () => '<span class="crystal"></span>').join("")}</div><div class="explorer"><span class="collect-beam"></span>${bot()}</div><div class="explore-base"></div>`,
+    rockets: `<div class="flight-lanes">${[0, 1, 2].map((i) => `<span class="flight-lane" style="--lane:${i}"><b>${i + 1}</b></span>`).join("")}</div><div class="dodge-bot">${bot()}</div>${[0, 1].map((i) => `<div class="incoming-rocket" data-rocket="${i}">${rocket}</div>`).join("")}`,
+    reaction: `<div class="radar-disc"></div><div class="decision-bot">${bot("", "thinking")}</div><div class="radar-orbits"></div>`,
+    collect: `${ground}<div class="letter-trail">${Array.from(
+      state.game.level.text,
+    )
+      .filter((ch) => ch.trim())
+      .slice(0, 24)
+      .map(
+        (ch, i) =>
+          `<span class="letter-gem" style="left:${12 + (i * 76) / Math.min(24, Array.from(state.game.level.text).filter((ch) => ch.trim()).length)}%">${esc(ch)}</span>`,
+      )
+      .join(
+        "",
+      )}</div><div class="letter-collector">${bot()}</div><div class="explore-base"></div>`,
+    platforms: `<div class="jump-platforms">${Array.from({ length: runes }, (_, i) => `<span class="jump-platform" style="left:${8 + (i * 78) / (runes - 1)}%;bottom:${35 + (i * 85) / (runes - 1)}px">${i + 1}</span>`).join("")}</div><div class="platform-jumper">${bot()}</div>`,
     portal: `${Array.from({ length: tier + 1 }, (_, i) => `<div class="portal-ring ring-${i}"><i></i><b></b></div>`).join("")}<div class="portal-core"></div><div class="portal-bot">${bot()}</div><div class="charge"><span></span></div>`,
   };
   const goal = t("goal" + mode[0].toUpperCase() + mode.slice(1));
@@ -1363,7 +1489,7 @@ function gameView() {
   const g = state.game,
     l = g.level;
   if (g.result) return resultView();
-  return `<div class="game-layout"><header class="game-heading"><div><span class="eyebrow">${t(g.guest ? "guestBadge" : g.practice ? "practice" : "evaluated")} · ${l.language.toUpperCase()}</span><h1 style="margin:8px 0 0">${esc(l.name)}</h1></div><button class="secondary" id="leave-button">${t("abandon")}</button></header><p class="small muted" style="margin:12px 0">${t(l.mode + "Instruction")}</p>${scene(l.mode)}<div class="game-stats"><div><strong id="game-accuracy" class="pixel">100%</strong><span>${t("accuracy")}</span></div><div><strong id="game-wpm" class="pixel">0</strong><span>${t("wpm")}</span></div><div><strong id="game-time" class="pixel">0:00</strong><span>${t("time")}</span></div><div><strong class="pixel">${l.target_wpm}</strong><span>${t("target")}</span></div></div><section class="typing-card"><div class="row" style="justify-content:space-between">${badge(t(g.guest ? "guestBadge" : g.practice ? "practice" : "evaluated"), g.practice ? "green" : "")}<button class="secondary" id="pause-button">${t(g.paused ? "resume" : "pause")}</button></div><div id="typing-text" class="typing-text" aria-label="${t("exerciseOnly")}"></div><label class="small muted" for="type-input">${t("typeHere")}</label><input id="type-input" class="type-input" type="text" autocomplete="off" autocorrect="off" spellcheck="false" autocapitalize="off" aria-describedby="typing-status" ${g.paused || g.saving ? "disabled" : ""}><p id="typing-status" class="small muted" role="status">${t(g.saving ? "saving" : g.paused ? "paused" : g.guest ? "guestHint" : g.practice ? "practiceHint" : "typeHint")}</p><p class="small muted">${t("backspaceHint")}</p><div id="retry-area"></div></section><div id="keyboard" class="keyboard" aria-hidden="true"></div></div>`;
+  return `<div class="game-layout"><header class="game-heading"><div><span class="eyebrow">${t(g.guest ? "guestBadge" : g.practice ? "practice" : "evaluated")} · ${l.language.toUpperCase()}</span><h1 style="margin:8px 0 0">${esc(l.name)}</h1></div><button class="secondary" id="leave-button">${t("abandon")}</button></header><p class="small muted" style="margin:12px 0">${t(l.mode + "Instruction")}</p>${scene(l.mode)}${["rockets", "reaction"].includes(l.mode) ? `<section class="decision-controls" aria-label="${t(l.mode)}"><p class="decision-prompt">${t(l.mode === "rockets" ? "safeRoute" : "signal")}: <strong id="decision-letter"></strong></p><div id="decision-options" class="decision-options"></div><p id="decision-feedback" role="status" class="small"></p></section>` : ""}<div class="game-stats"><div><strong id="game-accuracy" class="pixel">100%</strong><span>${t("accuracy")}</span></div><div><strong id="game-wpm" class="pixel">0</strong><span>${t("wpm")}</span></div><div><strong id="game-time" class="pixel">0:00</strong><span>${t("time")}</span></div><div><strong class="pixel">${l.target_wpm}</strong><span>${t("target")}</span></div></div><section class="typing-card"><div class="row" style="justify-content:space-between">${badge(t(g.guest ? "guestBadge" : g.practice ? "practice" : "evaluated"), g.practice ? "green" : "")}<button class="secondary" id="pause-button">${t(g.paused ? "resume" : "pause")}</button></div><div id="typing-text" class="typing-text" aria-label="${t("exerciseOnly")}"></div><label class="small muted" for="type-input">${t("typeHere")}</label><input id="type-input" class="type-input" type="text" autocomplete="off" autocorrect="off" spellcheck="false" autocapitalize="off" aria-describedby="typing-status" ${g.paused || g.saving ? "disabled" : ""}><p id="typing-status" class="small muted" role="status">${t(g.saving ? "saving" : g.paused ? "paused" : g.guest ? "guestHint" : g.practice ? "practiceHint" : "typeHint")}</p><p class="small muted">${t("backspaceHint")}</p><div id="retry-area"></div></section><div id="keyboard" class="keyboard" aria-hidden="true"></div></div>`;
 }
 function textMetrics() {
   const g = state.game;
@@ -1465,15 +1591,22 @@ function updateGame() {
     .find((key) => key.dataset.key === match)
     ?.classList.add("next");
   const stats = typingProgress(),
-    ratio =
-      g.level.mode === "portal"
-        ? stats.prefix / text.length
-        : stats.words / stats.total,
+    ratio = ["portal", "rockets", "reaction", "collect"].includes(g.level.mode)
+      ? stats.prefix / text.length
+      : stats.words / stats.total,
     scene = $("#game-scene");
+  const decisions = ["rockets", "reaction"].includes(g.level.mode);
+  const letters = decisions || g.level.mode === "collect";
   $("#mission-words").textContent =
-    `${t("wordsDone")}: ${stats.words} / ${stats.total}`;
+    `${t(decisions ? "signalsDone" : letters ? "lettersDone" : "wordsDone")}: ${letters ? stats.prefix : stats.words} / ${letters ? text.length : stats.total}`;
   $("#mission-progress-bar").style.width = `${ratio * 100}%`;
-  sceneAnimation?.setTarget(ratio, stats.words);
+  sceneAnimation?.setTarget(
+    ratio,
+    ["rockets", "reaction", "collect"].includes(g.level.mode)
+      ? stats.prefix
+      : stats.words,
+  );
+  updateDecisionControls();
   const expression =
     ratio >= 0.75 ? "surprised" : ratio >= 0.25 ? "thinking" : "curious";
   scene.querySelectorAll(".bot").forEach((character) => {
@@ -1495,6 +1628,32 @@ function updateGame() {
     );
   });
   updateGameStats();
+}
+function updateDecisionControls() {
+  const g = state.game,
+    container = $("#decision-options");
+  if (!container) return;
+  const index = g.buffer.length,
+    expected = textMetrics().chars[index];
+  if (!expected) return;
+  $("#decision-letter").textContent = expected === " " ? t("space") : expected;
+  $("#decision-feedback").textContent = g.decisionFeedback || "";
+  if (container.dataset.index === String(index)) return;
+  container.dataset.index = index;
+  const choices = AtigraArcade.choices(expected, index, g.level.language);
+  const hadFocus = container.contains(document.activeElement);
+  container.innerHTML = choices
+    .map(
+      (ch, lane) =>
+        `<button class="decision-choice" data-lane="${lane}" data-choice="${esc(ch)}" ${g.paused || g.saving ? "disabled" : ""}><span>${lane + 1}</span><strong>${esc(ch === " " ? t("space") : ch)}</strong></button>`,
+    )
+    .join("");
+  container.querySelectorAll("button").forEach((button) => {
+    button.onpointerdown = (event) => event.preventDefault();
+    button.onclick = () => recordChar(button.dataset.choice);
+  });
+  if (hadFocus) $("#type-input").focus();
+  sceneAnimation?.setSafeLane(choices.indexOf(expected));
 }
 function localStats() {
   const g = state.game;
@@ -1540,6 +1699,18 @@ function recordChar(char) {
   if (g.started === null) g.started = performance.now();
   g.events.push({ kind: "char", char, t: activeTime() });
   g.buffer.push(char);
+  if (["rockets", "reaction"].includes(g.level.mode)) {
+    const index = g.buffer.length - 1,
+      expected = textMetrics().chars[index];
+    const choices = AtigraArcade.choices(expected, index, g.level.language);
+    const correct = char === expected;
+    sceneAnimation?.decision(choices.indexOf(char), correct);
+    g.decisionFeedback = t(correct ? "correctChoice" : "tryAgainChoice");
+    if (!correct) {
+      g.events.push({ kind: "backspace", t: activeTime() });
+      g.buffer.pop();
+    }
+  }
   if (g.events.length > 20000) {
     pauseGame();
     toast(t("invalid_events"));
@@ -1582,9 +1753,9 @@ function bindGame() {
     };
     if ($("#result-next"))
       $("#result-next").onclick = () => {
-        if (g.guest) {
+        if (g.practice && g.level.stage_id) {
           const next = nextGuestStage(g);
-          if (next) startGuestGame(next.id, g.level.language);
+          if (next) startArcadeStage(next.id, g.level.language);
           return;
         }
         const next = nextLevel();
@@ -1644,7 +1815,8 @@ function bindGame() {
   input.oninput = () => {
     if (!g.composition) input.value = g.buffer.join("");
   };
-  input.onblur = () => {
+  input.onblur = (event) => {
+    if (event.relatedTarget?.closest(".decision-controls")) return;
     if (!g.saving && !g.result) pauseGame();
   };
   // Keep the input focused until the explicit pause action runs.
@@ -1670,6 +1842,9 @@ async function finishGame() {
   const g = state.game;
   g.saving = true;
   $("#type-input").disabled = true;
+  document
+    .querySelectorAll(".decision-choice")
+    .forEach((button) => (button.disabled = true));
   $("#typing-status").textContent = t("saving");
   try {
     await sceneAnimation?.celebrate();
@@ -1747,8 +1922,8 @@ function resultRating(attempt, target) {
   else if (attempt.accuracy < 90) count = Math.min(count, 3);
   if (attempt.accuracy < 97 || attempt.wpm < target) count = Math.min(count, 4);
   return {
-    bots: attempt.bots ?? count,
-    score: attempt.score ?? score,
+    bots: attempt.bots ?? attempt.feedback_bots ?? count,
+    score: attempt.score ?? attempt.feedback_score ?? score,
     speed,
     supreme: attempt.accuracy === 100 && attempt.wpm >= target,
   };
@@ -1770,7 +1945,7 @@ function resultView() {
       : a.wpm < g.level.target_wpm
         ? "speedAdvice"
         : "greatAdvice";
-  return `<section class="result game-layout"><span class="eyebrow">${esc(g.level.name)} · ${g.level.language.toUpperCase()}</span><h1>${t(g.guest ? "guestComplete" : g.practice ? "practiceResult" : "resultTitle")}</h1><p class="muted">${t("resultSub")}</p><div class="rating-panel ${rating.supreme ? "rating-supreme" : ""}"><h2>${t("ratingTitle")} · ${rating.bots}/5 ATIBOTS</h2>${bots(rating.bots)}${rating.supreme ? `<strong class="maker-supremo">MAKER SUPREMO</strong><p>${t("makerMessage")}</p>` : ""}<p>${t("speedPercent")}: <strong>${number(rating.speed)} %</strong> · ${number(g.level.target_wpm)} ${t("wpm")}</p>${g.practice ? `<p class="small muted">${t("practiceRatingNote")}</p>` : ""}</div><div class="stats">${stat(number(a.accuracy) + "%", "accuracy", "◎")}${stat(number(a.wpm), "wpm", "↯")}${stat(duration(a.active_ms), "time", "◷")}${stat(number(rating.score), "score", "✧")}</div><p class="result-message">${t(advice)}</p><div class="form-grid"><section class="panel"><h2>${t("errors")}</h2><p class="pixel">${Object.keys(errors).length ? errorKeys(errors) : t("noErrors")}</p><p class="small muted">${t("errorsCorrected")}</p></section><section class="panel"><h2>${t("previous")}</h2>${previous ? `<p>${t("accuracy")}: <strong>${number(a.accuracy - previous.accuracy)} pp</strong><br>${t("wpm")}: <strong>${number(a.wpm - previous.wpm)}</strong></p>` : `<p class="muted">${t(g.guest ? "guestHint" : "firstAttempt")}</p>`}</section></div><div class="row" style="justify-content:center"><button class="secondary nav-back" id="result-back">${t(g.guest ? "guestBack" : "back")}</button><button class="secondary nav-repeat" id="result-repeat">${t("repeat")}</button>${!g.practice || (g.guest && nextGuestStage(g)) ? `<button class="primary nav-next" id="result-next">${t("nextTrial")} →</button>` : ""}</div></section>`;
+  return `<section class="result game-layout"><span class="eyebrow">${esc(g.level.name)} · ${g.level.language.toUpperCase()}</span><h1>${t(g.guest ? "guestComplete" : g.practice ? "practiceResult" : "resultTitle")}</h1><p class="muted">${t(g.practice && !g.guest ? "savedPracticeResult" : "resultSub")}</p><div class="rating-panel ${rating.supreme ? "rating-supreme" : ""}"><h2>${t("ratingTitle")} · ${rating.bots}/5 ATIBOTS</h2>${bots(rating.bots)}${rating.supreme ? `<strong class="maker-supremo">MAKER SUPREMO</strong><p>${t("makerMessage")}</p>` : ""}<p>${t("speedPercent")}: <strong>${number(rating.speed)} %</strong> · ${number(g.level.target_wpm)} ${t("wpm")}</p>${g.practice ? `<p class="small muted">${t("practiceRatingNote")}</p>` : ""}</div><div class="stats">${stat(number(a.accuracy) + "%", "accuracy", "◎")}${stat(number(a.wpm), "wpm", "↯")}${stat(duration(a.active_ms), "time", "◷")}${stat(number(rating.score), "score", "✧")}</div><p class="result-message">${t(advice)}</p><div class="form-grid"><section class="panel"><h2>${t("errors")}</h2><p class="pixel">${Object.keys(errors).length ? errorKeys(errors) : t("noErrors")}</p><p class="small muted">${t("errorsCorrected")}</p></section><section class="panel"><h2>${t("previous")}</h2>${previous ? `<p>${t("accuracy")}: <strong>${number(a.accuracy - previous.accuracy)} pp</strong><br>${t("wpm")}: <strong>${number(a.wpm - previous.wpm)}</strong></p>` : `<p class="muted">${t(g.guest ? "guestHint" : "firstAttempt")}</p>`}</section></div><div class="row" style="justify-content:center"><button class="secondary nav-back" id="result-back">${t(g.guest ? "guestBack" : "back")}</button><button class="secondary nav-repeat" id="result-repeat">${t("repeat")}</button>${!g.practice || (g.level.stage_id && nextGuestStage(g)) ? `<button class="primary nav-next" id="result-next">${t("nextTrial")} →</button>` : ""}</div></section>`;
 }
 function rewardSound() {
   if (!state.sound) return;
@@ -1898,7 +2073,7 @@ async function loadReports() {
       ),
     );
     $("#report-body").innerHTML =
-      `<div class="stats">${stat(complete.length, "attempts", "↻")}${stat(number(mean(complete, "accuracy")) + "%", "accuracy", "◎")}${stat(number(mean(complete, "wpm")), "wpm", "↯")}${stat(number(rows.reduce((s, r) => s + r.active_ms, 0) / 60000) + " " + t("unitMinutes"), "totalTime", "◷")}</div><section class="panel"><h2>${t("classSummary")}</h2><div class="table-wrap"><table><thead><tr>${["alias", "assigned", "levelsDone", "accuracy", "wpm", "totalTime", "lastActivity", "mostErrors"].map((k) => `<th>${t(k)}</th>`).join("")}</tr></thead><tbody>${state.teacher.students
+      `<div class="stats">${stat(complete.length, "attempts", "↻")}${stat(number(mean(complete, "accuracy")) + "%", "accuracy", "◎")}${stat(number(mean(complete, "wpm")), "wpm", "↯")}${stat(number(rows.reduce((s, r) => s + r.active_ms, 0) / 60000) + " " + t("unitMinutes"), "totalTime", "◷")}</div>${practiceProgress(rows)}<section class="panel"><h2>${t("classSummary")}</h2><div class="table-wrap"><table><thead><tr>${["alias", "assigned", "levelsDone", "practiceAttempts", "accuracy", "wpm", "totalTime", "lastActivity", "mostErrors"].map((k) => `<th>${t(k)}</th>`).join("")}</tr></thead><tbody>${state.teacher.students
         .filter(
           (s) =>
             !state.reportFilters.student_id ||
@@ -1929,7 +2104,7 @@ async function loadReports() {
               ([k, v]) => (keys[k] = (keys[k] || 0) + v),
             ),
           );
-          return `<tr><td>${esc(s.alias)}</td><td>${assigned.size}</td><td>${bestAttempts(c).length}</td><td>${number(mean(c, "accuracy"))}%</td><td>${number(mean(c, "wpm"))}</td><td>${duration(all.reduce((sum, a) => sum + a.active_ms, 0))}</td><td>${date(all[0]?.created_at)}</td><td>${errorKeys(keys)}</td></tr>`;
+          return `<tr><td>${esc(s.alias)}</td><td>${assigned.size}</td><td>${bestAttempts(c).length}</td><td>${all.filter((a) => a.practice).length}</td><td>${number(mean(c, "accuracy"))}%</td><td>${number(mean(c, "wpm"))}</td><td>${duration(all.reduce((sum, a) => sum + a.active_ms, 0))}</td><td>${date(all[0]?.created_at)}</td><td>${errorKeys(keys)}</td></tr>`;
         })
         .join(
           "",
@@ -2193,9 +2368,7 @@ function levelModal(level, clone = false) {
         "mode",
         select(
           "mode",
-          ["castle", "race", "bridge", "dragon", "explore", "portal"].map(
-            (m) => [m, t(m)],
-          ),
+          AtigraArcade.modes.map((m) => [m, t(m)]),
           level?.mode || "castle",
         ),
       )}${field(
@@ -2317,7 +2490,9 @@ function assignmentModal(target, id, a) {
 }
 (async () => {
   try {
-    state.demo = (await api("/api/config")).demo;
+    const config = await api("/api/config");
+    state.demo = config.demo;
+    AtigraArcade.load(config.arcade);
     const me = await api("/api/me");
     state.user = me.user;
     state.csrf = me.csrf;

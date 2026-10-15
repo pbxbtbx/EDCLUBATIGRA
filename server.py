@@ -19,6 +19,7 @@ BUILD_ID = hashlib.sha256(
             "web/app.js",
             "web/motion.js",
             "web/arcade.js",
+            "web/arcade.json",
             "web/styles.css",
             "web/index.html",
             "resources/timezones/Europe-Madrid.tzif",
@@ -29,7 +30,8 @@ BUILD_ID = hashlib.sha256(
 ).hexdigest()[:12]
 INSTALLATION_ID = hashlib.sha256(str(ROOT.resolve()).encode()).hexdigest()[:12]
 
-MODES = ["castle", "race", "bridge", "dragon", "explore", "portal"]
+ARCADE = json.loads((ROOT / "web" / "arcade.json").read_text(encoding="utf-8"))
+MODES = ARCADE["modes"]
 PLANETS = [
     ("Órbita del castillo", "Castle orbit", "⌂"),
     ("Nebulosa de cristal", "Crystal nebula", "◇"),
@@ -59,6 +61,7 @@ CREATE TABLE IF NOT EXISTS sessions(token TEXT PRIMARY KEY, user_id INTEGER NOT 
 CREATE TABLE IF NOT EXISTS runs(id TEXT PRIMARY KEY, student_id INTEGER NOT NULL REFERENCES users(id), level_id INTEGER NOT NULL REFERENCES levels(id), text TEXT NOT NULL, target_wpm REAL NOT NULL, rules TEXT NOT NULL, started REAL NOT NULL, practice INTEGER NOT NULL, consumed INTEGER DEFAULT 0);
 CREATE TABLE IF NOT EXISTS attempts(id INTEGER PRIMARY KEY, student_id INTEGER NOT NULL REFERENCES users(id), level_id INTEGER NOT NULL REFERENCES levels(id), class_id INTEGER REFERENCES classes(id), completed INTEGER NOT NULL, practice INTEGER NOT NULL, accuracy REAL, wpm REAL, active_ms INTEGER NOT NULL, score REAL, bots INTEGER, errors TEXT NOT NULL, typed INTEGER NOT NULL, correct INTEGER NOT NULL, created_at TEXT NOT NULL, week TEXT NOT NULL, eligible INTEGER DEFAULT 0);
 CREATE INDEX IF NOT EXISTS attempt_student ON attempts(student_id,level_id,created_at);
+CREATE TABLE IF NOT EXISTS arcade_levels(stage_id TEXT NOT NULL, language TEXT NOT NULL, level_id INTEGER UNIQUE NOT NULL REFERENCES levels(id), PRIMARY KEY(stage_id, language));
 CREATE TABLE IF NOT EXISTS weekly_snapshots(class_id INTEGER NOT NULL REFERENCES classes(id), week TEXT NOT NULL, results TEXT NOT NULL, PRIMARY KEY(class_id,week));
 """
 
@@ -122,7 +125,18 @@ def seed(demo=None):
     Path(DB_PATH).parent.mkdir(parents=True, exist_ok=True)
     with connect() as db:
         db.executescript(SCHEMA)
+        # Additive migration works for both existing classrooms and fresh installs.
+        columns = {row["name"] for row in db.execute("PRAGMA table_info(attempts)")}
+        for name, kind in (
+            ("feedback_score", "REAL"),
+            ("feedback_bots", "INTEGER"),
+            ("speed_percent", "REAL"),
+            ("maker_supremo", "INTEGER"),
+        ):
+            if name not in columns:
+                db.execute(f"ALTER TABLE attempts ADD COLUMN {name} {kind}")
         if db.execute("SELECT 1 FROM levels LIMIT 1").fetchone():
+            seed_arcade(db)
             return
         if demo:
             teacher = db.execute(
@@ -261,6 +275,51 @@ def seed(demo=None):
                         "INSERT INTO assignments(class_id,level_id,position,unlock_accuracy) VALUES(?,?,?,90)",
                         (cid, lid, i),
                     )
+
+        seed_arcade(db)
+
+
+def seed_arcade(db):
+    """Add the catalog without replacing users, assignments, levels or history."""
+    for index, stage in enumerate(ARCADE["levels"]):
+        for language in ("es", "en"):
+            if db.execute(
+                "SELECT 1 FROM arcade_levels WHERE stage_id=? AND language=?",
+                (stage["id"], language),
+            ).fetchone():
+                continue
+            lid = db.execute(
+                "INSERT INTO levels(owner_id,planet_id,name,mode,text,language,target_wpm,unlock_accuracy,position) VALUES(NULL,?,?,?,?,?,?,90,?)",
+                (
+                    stage["planet_id"],
+                    stage["name"][language],
+                    stage["mode"],
+                    stage["text"][language],
+                    language,
+                    stage["target_wpm"],
+                    100 + index,
+                ),
+            ).lastrowid
+            db.execute(
+                "INSERT INTO arcade_levels VALUES(?,?,?)", (stage["id"], language, lid)
+            )
+
+
+def arcade_catalog(db):
+    ids = {
+        (row["stage_id"], row["language"]): row["level_id"]
+        for row in db.execute("SELECT * FROM arcade_levels")
+    }
+    return {
+        "modes": ARCADE["modes"],
+        "levels": [
+            {
+                **stage,
+                "level_ids": {lang: ids[(stage["id"], lang)] for lang in ("es", "en")},
+            }
+            for stage in ARCADE["levels"]
+        ],
+    }
 
 
 class Problem(Exception):
@@ -633,6 +692,7 @@ class Handler(BaseHTTPRequestHandler):
                             "demo": os.environ.get("ATIGRA_DEMO", "1") == "1",
                             "build": BUILD_ID,
                             "installation": INSTALLATION_ID,
+                            "arcade": arcade_catalog(db),
                         }
                     )
                 if path == "/api/login" and self.command == "POST":
@@ -803,7 +863,26 @@ class Handler(BaseHTTPRequestHandler):
                 ),
                 None,
             )
+            if (level is None or not level["unlocked"]) and data.get(
+                "practice"
+            ) is True:
+                row = db.execute(
+                    "SELECT l.*,l.id AS level_id,a.stage_id FROM arcade_levels a JOIN levels l ON l.id=a.level_id WHERE l.id=? AND l.published=1",
+                    (int(data["level_id"]),),
+                ).fetchone()
+                if row:
+                    level = dict(row)
+                    level["unlocked"] = True
             require(level is not None and level["unlocked"], "level_locked", 403)
+            stage = db.execute(
+                "SELECT stage_id FROM arcade_levels WHERE level_id=?",
+                (level["level_id"],),
+            ).fetchone()
+            if stage:
+                level["stage_id"] = stage[0]
+                level["tier"] = next(
+                    item["tier"] for item in ARCADE["levels"] if item["id"] == stage[0]
+                )
             rid = secrets.token_urlsafe(24)
             rules = json.loads(cls["rules"]) if cls else DEFAULT_RULES
             db.execute(
@@ -887,6 +966,27 @@ class Handler(BaseHTTPRequestHandler):
                     int(eligible),
                 ),
             ).lastrowid
+            if result["completed"]:
+                feedback_score, feedback_bots = grade(
+                    result["accuracy"],
+                    result["wpm"],
+                    run["target_wpm"],
+                    DEFAULT_RULES if run["practice"] else json.loads(run["rules"]),
+                )
+                speed_percent = min(100, result["wpm"] / run["target_wpm"] * 100)
+                db.execute(
+                    "UPDATE attempts SET feedback_score=?,feedback_bots=?,speed_percent=?,maker_supremo=? WHERE id=?",
+                    (
+                        feedback_score,
+                        feedback_bots,
+                        speed_percent,
+                        int(
+                            result["accuracy"] == 100
+                            and result["wpm"] >= run["target_wpm"]
+                        ),
+                        aid,
+                    ),
+                )
             return self.send(
                 {
                     "attempt": dict(
@@ -984,6 +1084,10 @@ class Handler(BaseHTTPRequestHandler):
                 "score",
                 "bots",
                 "errors",
+                "feedback_score",
+                "feedback_bots",
+                "speed_percent",
+                "maker_supremo",
                 "created_at",
                 "week",
             ]

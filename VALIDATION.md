@@ -104,3 +104,17 @@ Las comprobaciones se hicieron en Chromium/Linux. No se midió una tasa de fotog
 - `python3 tests/browser_arcade.py`: superado en Chromium; 18 retos completos, cinco ATIBOTS y distinción, límites de precisión/velocidad sin redondear, respeto a resultados oficiales, avance efectivo, colores y fuentes distintos, y comprobaciones existentes de animación/accesibilidad.
 - `python3 tests/browser_smoke.py`: superado en Chromium; prueba con error corregido, seis modalidades evaluadas, acceso alumno/docente, historial, idiomas y acciones del profesor.
 - `node --check web/app.js` y `git diff --check`: sin errores.
+
+## Progreso persistente y cuatro modalidades nuevas (2026-10-15)
+
+- Catálogo único `web/arcade.json`: conserva los 18 retos anteriores y añade cohetes, reacción con tres opciones, recolección de letras y plataformas. Tres dificultades por modalidad y dos idiomas: 30 retos, 60 variantes persistentes, más los 36 niveles originales del curso.
+- La inicialización aplica una migración aditiva: relación `arcade_levels` y campos `feedback_score`, `feedback_bots`, `speed_percent`, `maker_supremo`. No sustituye cuentas, contraseñas, asignaciones ni intentos. Los ids del catálogo permanecen estables al reiniciar.
+- Alumnos autenticados guardan sus partidas de sala como prácticas. Las valoraciones se calculan en el servidor; no alteran puntos oficiales ni requisitos de desbloqueo. La galería muestra intentos y mejor valoración; alumno y profesor disponen de resumen y gráficos de práctica, historial y exportación de métricas. Un profesor solo accede a su alumnado.
+- Decisiones con botones reales y teclado: la letra incorrecta se registra y permite reintentar; la precisión no vuelve al 100 % al corregir. Cohetes y ATIBOT usan interpolación por tiempo, radar giratorio, letras que se recogen y saltos entre plataformas. Las escenas usan el controlador RAF compartido, pausa y movimiento reducido.
+- `python3 -m unittest discover -s tests -q`: **32 pruebas superadas**, incluidas migración de una base antigua con progreso, persistencia tras salir, catálogo estable, acceso docente, aislamiento entre alumnos/docentes, CSV, valoración sin aceptar puntos del cliente y práctica de un reto bloqueado sin permitir evaluación.
+- `python3 tests/browser_arcade.py`: **superado**, completa los 30 retos y mantiene las verificaciones de animación, pausa, movimiento reducido del sistema, limpieza de bucles y puntuación.
+- `python3 tests/browser_smoke.py`: **superado**, evalúa las diez modalidades, comprueba progreso, Unicode, idiomas, acceso docente, tablet, creación de contenido y CSV.
+- `python3 tests/browser_progress.py`: **superado**, pulsa botones de decisión, comprueba errores/reintentos, pausa y desactivación de botones, movimiento de cohetes y ATIBOT, pantalla de 375 px, guardado de las cuatro modalidades, gráficos y marcas en galería, informes, CSV y conservación de datos después de detener y reiniciar el proceso servidor.
+- Revisadas capturas reales de las cuatro escenas en Chromium. No se afirma una tasa de FPS garantizada ni ejecución en Windows desde este entorno Linux.
+- `python3 server.py --init-only`: ejecutado sobre la base local; verificadas 60 variantes de sala y las cuatro columnas de valoración. No se versiona la base ni sus datos.
+- Comprobaciones de sintaxis de `app.js`, `arcade.js`, `motion.js` y `git diff --check`: sin errores.

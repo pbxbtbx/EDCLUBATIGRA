@@ -153,11 +153,59 @@ class ScoreTests(unittest.TestCase):
                     db.execute("SELECT COUNT(*) FROM users").fetchone()[0], 0
                 )
                 self.assertEqual(
-                    db.execute("SELECT COUNT(*) FROM levels").fetchone()[0], 36
+                    db.execute("SELECT COUNT(*) FROM levels").fetchone()[0], 96
                 )
         finally:
             server.DB_PATH = old
             temp.cleanup()
+
+    def test_existing_database_migration_keeps_progress(self):
+        old_path = server.DB_PATH
+        try:
+            with tempfile.TemporaryDirectory() as temp:
+                server.DB_PATH = temp + "/legacy.sqlite3"
+                with server.connect() as db:
+                    db.executescript(server.SCHEMA)
+                    for i, planet in enumerate(server.PLANETS, 1):
+                        db.execute("INSERT INTO planets VALUES(?,?,?,?)", (i, *planet))
+                    db.execute(
+                        "INSERT INTO users VALUES(1,'old.student',NULL,'Original','student','original-hash',NULL,?)",
+                        (server.now(),),
+                    )
+                    db.execute(
+                        "INSERT INTO levels VALUES(1,NULL,1,'Original level','castle','abc','es',10,90,0,1)"
+                    )
+                    db.execute(
+                        "INSERT INTO attempts VALUES(1,1,1,NULL,1,0,100,10,3600,100,5,'{}',3,3,?,?,0)",
+                        (server.now(), server.week_key()),
+                    )
+                    original = dict(db.execute("SELECT * FROM attempts").fetchone())
+                server.seed()
+                server.seed()
+                with server.connect() as db:
+                    migrated = dict(
+                        db.execute("SELECT * FROM attempts WHERE id=1").fetchone()
+                    )
+                    self.assertEqual({k: migrated[k] for k in original}, original)
+                    self.assertIn("feedback_bots", migrated)
+                    self.assertEqual(
+                        db.execute("SELECT password FROM users WHERE id=1").fetchone()[
+                            0
+                        ],
+                        "original-hash",
+                    )
+                    self.assertEqual(
+                        db.execute("SELECT COUNT(*) FROM users").fetchone()[0], 1
+                    )
+                    self.assertEqual(
+                        db.execute("SELECT COUNT(*) FROM levels").fetchone()[0], 61
+                    )
+                    self.assertEqual(
+                        db.execute("SELECT COUNT(*) FROM arcade_levels").fetchone()[0],
+                        60,
+                    )
+        finally:
+            server.DB_PATH = old_path
 
 
 class ApiTests(unittest.TestCase):
@@ -217,6 +265,123 @@ class ApiTests(unittest.TestCase):
             "/api/attempt",
             {"run_id": r["run_id"], "events": events, "active_ms": seconds * 1000},
         )
+
+    def test_arcade_persists_feedback_and_teacher_access(self):
+        status, user = self.teacher.request(
+            "/api/student-account",
+            {
+                "username": "arcade.pilot",
+                "alias": "Arcade Pilot",
+                "password": "AtigraDemo2026!",
+            },
+        )
+        self.assertEqual(status, 200)
+        pupil = Client(self.base)
+        pupil.login("arcade.pilot")
+        catalog = pupil.request("/api/config")[1]["arcade"]
+        self.assertEqual(len(catalog["levels"]), 30)
+        saved = []
+        for mode in ("rockets", "reaction", "collect", "platforms"):
+            stage = next(s for s in catalog["levels"] if s["id"] == mode + "-1")
+            lid = stage["level_ids"]["es"]
+            self.assertEqual(pupil.request("/api/run", {"level_id": lid})[0], 403)
+            if mode == "rockets":
+                with server.connect() as db:
+                    db.execute(
+                        "INSERT INTO assignments(student_id,level_id,position) VALUES(?,?,0)",
+                        (user["id"], 1),
+                    )
+                    db.execute(
+                        "INSERT INTO assignments(student_id,level_id,position) VALUES(?,?,1)",
+                        (user["id"], lid),
+                    )
+                self.assertEqual(pupil.request("/api/run", {"level_id": lid})[0], 403)
+            status, run = pupil.request("/api/run", {"level_id": lid, "practice": True})
+            self.assertEqual(status, 200, run)
+            self.assertEqual(run["level"]["tier"], 1)
+            text = run["level"]["text"]
+            events = [
+                {"kind": "char", "char": "x", "t": 0},
+                {"kind": "backspace", "t": 10},
+            ]
+            if mode != "reaction":
+                events = []
+            events += [
+                {"kind": "char", "char": ch, "t": 20 + i * 100}
+                for i, ch in enumerate(text)
+            ]
+            with server.connect() as db:
+                db.execute(
+                    "UPDATE runs SET started=started-6 WHERE id=?", (run["run_id"],)
+                )
+            status, result = pupil.request(
+                "/api/attempt",
+                {
+                    "run_id": run["run_id"],
+                    "events": events,
+                    "active_ms": 6000,
+                    "score": 100,
+                    "bots": 5,
+                },
+            )
+            self.assertEqual(status, 200, result)
+            attempt = result["attempt"]
+            saved.append(attempt["id"])
+            self.assertEqual(attempt["practice"], 1)
+            self.assertIsNone(attempt["score"])
+            self.assertIsNone(attempt["bots"])
+            if mode == "reaction":
+                self.assertLess(attempt["accuracy"], 100)
+                self.assertEqual(attempt["maker_supremo"], 0)
+            else:
+                self.assertEqual(attempt["accuracy"], 100)
+                self.assertEqual(attempt["maker_supremo"], 1)
+                self.assertEqual(attempt["feedback_bots"], 5)
+            self.assertEqual(
+                (attempt["feedback_score"], attempt["feedback_bots"]),
+                server.grade(
+                    attempt["accuracy"],
+                    attempt["wpm"],
+                    stage["target_wpm"],
+                    server.DEFAULT_RULES,
+                ),
+            )
+            self.assertEqual(attempt["speed_percent"], 100)
+            self.assertEqual(
+                pupil.request(
+                    "/api/attempt",
+                    {"run_id": run["run_id"], "events": events, "active_ms": 6000},
+                )[0],
+                409,
+            )
+        pupil.request("/api/logout", {})
+        pupil.login("arcade.pilot")
+        self.assertEqual(
+            [a["id"] for a in pupil.request("/api/student")[1]["attempts"]],
+            list(reversed(saved)),
+        )
+        report = self.teacher.request("/api/reports?student_id=" + str(user["id"]))[1]
+        self.assertEqual([a["id"] for a in report], list(reversed(saved)))
+        self.assertEqual(
+            self.other_client.request("/api/reports?student_id=" + str(user["id"]))[1],
+            [],
+        )
+        self.assertFalse(
+            any(
+                a["id"] in saved
+                for a in self.student.request("/api/student")[1]["attempts"]
+            )
+        )
+        export = self.teacher.request("/api/export?student_id=" + str(user["id"]))[1]
+        self.assertIn(b"feedback_bots", export)
+        self.assertIn(b"Arcade Pilot", export)
+        # Re-initialization on the same file retains students, catalog ids, and results.
+        server.seed()
+        self.assertEqual(
+            self.teacher.request("/api/reports?student_id=" + str(user["id"]))[1],
+            report,
+        )
+        self.assertEqual(pupil.request("/api/config")[1]["arcade"], catalog)
 
     def test_login_cookie_is_only_sent_after_session_is_committed(self):
         from unittest.mock import patch
@@ -296,9 +461,9 @@ class ApiTests(unittest.TestCase):
         status, report = self.teacher.request("/api/teacher")
         self.assertEqual(status, 200)
         self.assertEqual(
-            len([l for l in report["levels"] if l["owner_id"] is None]), 36
+            len([l for l in report["levels"] if l["owner_id"] is None]), 96
         )
-        self.assertEqual(len(set(l["mode"] for l in report["levels"])), 6)
+        self.assertEqual(len(set(l["mode"] for l in report["levels"])), 10)
         self.assertEqual(self.student.request("/api/teacher")[0], 404)
         self.assertEqual(self.student.request("/api/reports")[0], 404)
         self.assertEqual(self.teacher.request("/api/student")[0], 404)

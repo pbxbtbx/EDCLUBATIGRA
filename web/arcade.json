@@ -1,0 +1,466 @@
+{
+  "modes": [
+    "castle",
+    "race",
+    "bridge",
+    "dragon",
+    "explore",
+    "portal",
+    "rockets",
+    "reaction",
+    "collect",
+    "platforms"
+  ],
+  "levels": [
+    {
+      "id": "castle-1",
+      "mode": "castle",
+      "tier": 1,
+      "planet_id": 1,
+      "name": {
+        "es": "Escudo de aprendiz",
+        "en": "Apprentice shield"
+      },
+      "text": {
+        "es": "faja sala alas. ¡Hola, ATIBOT!",
+        "en": "fall salad lad. Hello, ATIBOT!"
+      },
+      "target_wpm": 10
+    },
+    {
+      "id": "castle-2",
+      "mode": "castle",
+      "tier": 2,
+      "planet_id": 1,
+      "name": {
+        "es": "Torres de energía",
+        "en": "Energy towers"
+      },
+      "text": {
+        "es": "Activa el escudo. Protege las torres y recupera la energía.",
+        "en": "Activate the shield. Protect the towers and recover the energy."
+      },
+      "target_wpm": 18
+    },
+    {
+      "id": "castle-3",
+      "mode": "castle",
+      "tier": 3,
+      "planet_id": 1,
+      "name": {
+        "es": "La fortaleza estelar",
+        "en": "The star fortress"
+      },
+      "text": {
+        "es": "¡Alerta, caballeros! Tres meteoritos se acercan al castillo. ATIBOT carga los escudos: ¡misión cumplida!",
+        "en": "Alert, knights! Three meteors approach the castle. ATIBOT charges the shields: mission complete!"
+      },
+      "target_wpm": 28
+    },
+    {
+      "id": "race-1",
+      "mode": "race",
+      "tier": 1,
+      "planet_id": 2,
+      "name": {
+        "es": "Primer despegue",
+        "en": "First launch"
+      },
+      "text": {
+        "es": "nave luna ruta luz",
+        "en": "ship moon road star"
+      },
+      "target_wpm": 10
+    },
+    {
+      "id": "race-2",
+      "mode": "race",
+      "tier": 2,
+      "planet_id": 2,
+      "name": {
+        "es": "Circuito de cometas",
+        "en": "Comet circuit"
+      },
+      "text": {
+        "es": "La nave cruza los anillos y sigue la ruta de los cometas.",
+        "en": "The ship crosses the rings and follows the comet trail."
+      },
+      "target_wpm": 18
+    },
+    {
+      "id": "race-3",
+      "mode": "race",
+      "tier": 3,
+      "planet_id": 2,
+      "name": {
+        "es": "Gran premio galáctico",
+        "en": "Galactic grand prix"
+      },
+      "text": {
+        "es": "Piloto, prepara el motor 7. Cruza Orión, gira hacia Júpiter y saluda: ¡qué gran viaje!",
+        "en": "Pilot, prepare engine 7. Cross Orion, turn toward Jupiter and say: what a great journey!"
+      },
+      "target_wpm": 28
+    },
+    {
+      "id": "bridge-1",
+      "mode": "bridge",
+      "tier": 1,
+      "planet_id": 3,
+      "name": {
+        "es": "Las primeras runas",
+        "en": "The first runes"
+      },
+      "text": {
+        "es": "as sa da fa ja la",
+        "en": "as sa da fa ja la"
+      },
+      "target_wpm": 10
+    },
+    {
+      "id": "bridge-2",
+      "mode": "bridge",
+      "tier": 2,
+      "planet_id": 3,
+      "name": {
+        "es": "El puente de cristal",
+        "en": "The crystal bridge"
+      },
+      "text": {
+        "es": "Une cada runa con cuidado. El puente conecta dos islas de cristal.",
+        "en": "Join each rune carefully. The bridge connects two crystal islands."
+      },
+      "target_wpm": 18
+    },
+    {
+      "id": "bridge-3",
+      "mode": "bridge",
+      "tier": 3,
+      "planet_id": 3,
+      "name": {
+        "es": "Camino entre dimensiones",
+        "en": "A path between dimensions"
+      },
+      "text": {
+        "es": "ATIBOT descifra: águila, brújula, código. Cada símbolo abre un camino. ¿Podrás llegar al otro lado?",
+        "en": "ATIBOT deciphers: eagle, compass, code. Each symbol opens a path. Can you reach the other side?"
+      },
+      "target_wpm": 28
+    },
+    {
+      "id": "dragon-1",
+      "mode": "dragon",
+      "tier": 1,
+      "planet_id": 4,
+      "name": {
+        "es": "Taller de engranajes",
+        "en": "Gear workshop"
+      },
+      "text": {
+        "es": "pieza rueda ala cola",
+        "en": "part wheel wing tail"
+      },
+      "target_wpm": 10
+    },
+    {
+      "id": "dragon-2",
+      "mode": "dragon",
+      "tier": 2,
+      "planet_id": 4,
+      "name": {
+        "es": "Alas de cobre",
+        "en": "Copper wings"
+      },
+      "text": {
+        "es": "Repara las alas del dragón. Conecta los cables y ajusta su motor.",
+        "en": "Repair the dragon wings. Connect the wires and tune its engine."
+      },
+      "target_wpm": 18
+    },
+    {
+      "id": "dragon-3",
+      "mode": "dragon",
+      "tier": 3,
+      "planet_id": 4,
+      "name": {
+        "es": "El despertar del dragón",
+        "en": "The dragon awakens"
+      },
+      "text": {
+        "es": "El dragón mecánico despertó a las 8:30. \"¡Gracias, ATIBOT!\", rugió. Sus alas brillan con energía verde.",
+        "en": "The mechanical dragon woke at 8:30. \"Thank you, ATIBOT!\" it roared. Its wings shine with green energy."
+      },
+      "target_wpm": 28
+    },
+    {
+      "id": "explore-1",
+      "mode": "explore",
+      "tier": 1,
+      "planet_id": 5,
+      "name": {
+        "es": "Paseo por el planeta",
+        "en": "Planet walk"
+      },
+      "text": {
+        "es": "roca gema nave base",
+        "en": "rock gem ship base"
+      },
+      "target_wpm": 10
+    },
+    {
+      "id": "explore-2",
+      "mode": "explore",
+      "tier": 2,
+      "planet_id": 5,
+      "name": {
+        "es": "El bosque de circuitos",
+        "en": "The circuit forest"
+      },
+      "text": {
+        "es": "Avanza hasta el bosque. Recoge cinco gemas y vuelve a la base.",
+        "en": "Walk to the forest. Collect five gems and return to the base."
+      },
+      "target_wpm": 18
+    },
+    {
+      "id": "explore-3",
+      "mode": "explore",
+      "tier": 3,
+      "planet_id": 5,
+      "name": {
+        "es": "Bitácora de expedición",
+        "en": "Expedition log"
+      },
+      "text": {
+        "es": "Día 12: descubrimos un cañón azul. Allí, un pequeño robot señaló una señal: \"Explora, imagina y crea\".",
+        "en": "Day 12: we discovered a blue canyon. A little robot pointed to a sign: \"Explore, imagine and create.\""
+      },
+      "target_wpm": 28
+    },
+    {
+      "id": "portal-1",
+      "mode": "portal",
+      "tier": 1,
+      "planet_id": 6,
+      "name": {
+        "es": "La primera chispa",
+        "en": "The first spark"
+      },
+      "text": {
+        "es": "luz azul abre portal",
+        "en": "blue light open portal"
+      },
+      "target_wpm": 10
+    },
+    {
+      "id": "portal-2",
+      "mode": "portal",
+      "tier": 2,
+      "planet_id": 6,
+      "name": {
+        "es": "Coordenadas secretas",
+        "en": "Secret coordinates"
+      },
+      "text": {
+        "es": "Escribe el código secreto. El portal se ilumina y abre una nueva ruta.",
+        "en": "Type the secret code. The portal lights up and opens a new route."
+      },
+      "target_wpm": 18
+    },
+    {
+      "id": "portal-3",
+      "mode": "portal",
+      "tier": 3,
+      "planet_id": 6,
+      "name": {
+        "es": "Destino: imaginación",
+        "en": "Destination: imagination"
+      },
+      "text": {
+        "es": "Coordenadas: 42, 17, 9. ¿Destino? ¡La imaginación! Si puedes soñarlo, puedes crearlo y programarlo.",
+        "en": "Coordinates: 42, 17, 9. Destination? Imagination! If you can dream it, you can create it and program it."
+      },
+      "target_wpm": 28
+    },
+    {
+      "id": "rockets-1",
+      "mode": "rockets",
+      "tier": 1,
+      "planet_id": 2,
+      "name": {
+        "es": "Órbita de cohetes",
+        "en": "Rocket orbit"
+      },
+      "text": {
+        "es": "fjfjdkdk",
+        "en": "fjfjdkdk"
+      },
+      "target_wpm": 10
+    },
+    {
+      "id": "rockets-2",
+      "mode": "rockets",
+      "tier": 2,
+      "planet_id": 2,
+      "name": {
+        "es": "Lluvia espacial",
+        "en": "Space shower"
+      },
+      "text": {
+        "es": "fjdkslajfjdksla",
+        "en": "fjdkslajfjdksla"
+      },
+      "target_wpm": 18
+    },
+    {
+      "id": "rockets-3",
+      "mode": "rockets",
+      "tier": 3,
+      "planet_id": 2,
+      "name": {
+        "es": "Piloto de nebulosas",
+        "en": "Nebula pilot"
+      },
+      "text": {
+        "es": "fjdkalsñfjdkalsñfjdk",
+        "en": "fjdkalslfjdkalslfjdk"
+      },
+      "target_wpm": 28
+    },
+    {
+      "id": "reaction-1",
+      "mode": "reaction",
+      "tier": 1,
+      "planet_id": 2,
+      "name": {
+        "es": "Tres señales",
+        "en": "Three signals"
+      },
+      "text": {
+        "es": "asdfjkl",
+        "en": "asdfjkl"
+      },
+      "target_wpm": 10
+    },
+    {
+      "id": "reaction-2",
+      "mode": "reaction",
+      "tier": 2,
+      "planet_id": 2,
+      "name": {
+        "es": "Radar de letras",
+        "en": "Letter radar"
+      },
+      "text": {
+        "es": "qwertyuiopasdfgh",
+        "en": "qwertyuiopasdfgh"
+      },
+      "target_wpm": 18
+    },
+    {
+      "id": "reaction-3",
+      "mode": "reaction",
+      "tier": 3,
+      "planet_id": 2,
+      "name": {
+        "es": "Reflejos de ATIBOT",
+        "en": "ATIBOT reflexes"
+      },
+      "text": {
+        "es": "ñáéíóúÑÁÉÍÓÚ!?",
+        "en": "aAeEiIoOuU!?"
+      },
+      "target_wpm": 28
+    },
+    {
+      "id": "collect-1",
+      "mode": "collect",
+      "tier": 1,
+      "planet_id": 4,
+      "name": {
+        "es": "Jardín de letras",
+        "en": "Letter garden"
+      },
+      "text": {
+        "es": "luna gema nave",
+        "en": "moon gem ship"
+      },
+      "target_wpm": 10
+    },
+    {
+      "id": "collect-2",
+      "mode": "collect",
+      "tier": 2,
+      "planet_id": 4,
+      "name": {
+        "es": "Ruta del alfabeto",
+        "en": "Alphabet trail"
+      },
+      "text": {
+        "es": "Recoge letras y crea tu camino.",
+        "en": "Collect letters and build your path."
+      },
+      "target_wpm": 18
+    },
+    {
+      "id": "collect-3",
+      "mode": "collect",
+      "tier": 3,
+      "planet_id": 4,
+      "name": {
+        "es": "Expedición de palabras",
+        "en": "Word expedition"
+      },
+      "text": {
+        "es": "¡Imagina, explora y recoge las letras del planeta!",
+        "en": "Imagine, explore and collect the planet letters!"
+      },
+      "target_wpm": 28
+    },
+    {
+      "id": "platforms-1",
+      "mode": "platforms",
+      "tier": 1,
+      "planet_id": 4,
+      "name": {
+        "es": "Saltos de energía",
+        "en": "Energy jumps"
+      },
+      "text": {
+        "es": "as df jk la",
+        "en": "as df jk la"
+      },
+      "target_wpm": 10
+    },
+    {
+      "id": "platforms-2",
+      "mode": "platforms",
+      "tier": 2,
+      "planet_id": 4,
+      "name": {
+        "es": "Islas programables",
+        "en": "Programmable islands"
+      },
+      "text": {
+        "es": "salta gira avanza crea",
+        "en": "jump turn move build"
+      },
+      "target_wpm": 18
+    },
+    {
+      "id": "platforms-3",
+      "mode": "platforms",
+      "tier": 3,
+      "planet_id": 4,
+      "name": {
+        "es": "Cumbre de circuitos",
+        "en": "Circuit summit"
+      },
+      "text": {
+        "es": "¡Programa cada salto! ATIBOT llegará a la cima.",
+        "en": "Program every jump! ATIBOT will reach the summit."
+      },
+      "target_wpm": 28
+    }
+  ]
+}

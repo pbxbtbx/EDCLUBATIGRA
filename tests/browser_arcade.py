@@ -1,4 +1,4 @@
-"""Real-browser checks for the 18 free challenges and animation lifecycle."""
+"""Real-browser checks for the 30 free challenges and animation lifecycle."""
 
 import json
 import os
@@ -74,8 +74,8 @@ class ArcadeFlow(unittest.TestCase):
                         page.goto(f"http://127.0.0.1:{port}")
                         page.wait_for_selector("#open-arcade")
                         page.locator("#open-arcade").click()
-                        self.assertEqual(page.locator("[data-stage-id]").count(), 18)
-                        self.assertEqual(page.locator(".arcade-card").count(), 6)
+                        self.assertEqual(page.locator("[data-stage-id]").count(), 30)
+                        self.assertEqual(page.locator(".arcade-card").count(), 10)
                         self.assertEqual(
                             len(
                                 set(
@@ -84,7 +84,7 @@ class ArcadeFlow(unittest.TestCase):
                                     )
                                 )
                             ),
-                            18,
+                            30,
                         )
                         self.assertEqual(
                             len(
@@ -94,7 +94,7 @@ class ArcadeFlow(unittest.TestCase):
                                     )
                                 )
                             ),
-                            18,
+                            30,
                         )
                         page.locator('[data-stage-id="race-2"]').click()
                         page.wait_for_selector("#type-input")
@@ -305,7 +305,7 @@ class ArcadeFlow(unittest.TestCase):
                             )
                             self.assertEqual(
                                 db.execute("SELECT COUNT(*) FROM levels").fetchone()[0],
-                                36,
+                                96,
                             )
                         self.assertEqual(errors, [])
                         browser.close()

@@ -108,7 +108,7 @@ class ProductionTests(unittest.TestCase):
                         db.execute("SELECT COUNT(*) FROM users").fetchone()[0], 1
                     )
                     self.assertEqual(
-                        db.execute("SELECT COUNT(*) FROM levels").fetchone()[0], 36
+                        db.execute("SELECT COUNT(*) FROM levels").fetchone()[0], 96
                     )
                 # Redeploy cannot overwrite existing accounts or require the bootstrap password again.
                 with patch.dict(os.environ, {"ATIGRA_ADMIN_PASSWORD": ""}):

@@ -41,7 +41,7 @@ La identidad incluye la frase «Si puedes imaginarlo y soñarlo, puedes crearlo 
 
 ## Sala de juegos: más variedad y movimiento
 
-Pulsa **«Elegir juego y nivel»** en la bienvenida o **«Sala de juegos»** desde tu panel. Hay **18 retos de práctica libre**: seis modalidades con tres dificultades (Inicio, Aventura y Desafío), con textos distintos en español e inglés. Son adicionales al catálogo de 36 niveles del curso; no sustituyen asignaciones ni modifican el historial existente.
+Pulsa **«Elegir juego y nivel»** en la bienvenida o **«Sala de juegos»** desde tu panel. Hay **30 retos de práctica libre**: diez modalidades con tres dificultades (Inicio, Aventura y Desafío), con textos distintos en español e inglés. Son adicionales al catálogo de 36 niveles del curso; no sustituyen asignaciones ni modifican el historial existente.
 
 | Juego | Qué ocurre al escribir | Cambios por dificultad |
 | --- | --- | --- |
@@ -51,12 +51,29 @@ Pulsa **«Elegir juego y nivel»** en la bienvenida o **«Sala de juegos»** des
 | Dragón mecánico | Se recuperan engranajes, cobra color y mueve sus alas articuladas | Más piezas y descripciones cada vez más largas |
 | Exploración | ATIBOT avanza, recoge cristales y descubre una base | Más recursos; palabras, instrucciones y una bitácora |
 | Portal | Los anillos giran en sentidos distintos y se ilumina el núcleo | 2, 3 o 4 anillos; códigos, coordenadas y un texto final |
+| Esquiva los cohetes | Elige la letra de la ruta segura entre tres carriles; ATIBOT cambia de carril mientras llegan dos cohetes | Secuencias más largas y nuevas letras |
+| Radar de reacción | Una señal muestra una letra y debes elegirla entre tres opciones, con botón o teclado | Más señales, mayúsculas, tildes y signos |
+| Recolector de letras | Cada carácter correcto hace avanzar a ATIBOT y recoger las letras del recorrido | Palabras, frases y una expedición completa |
+| Plataformas programables | Completar cada secuencia activa plataformas y anima los saltos de ATIBOT | 6, 10 o 14 plataformas y textos más complejos |
 
 El movimiento se interpola con un solo `requestAnimationFrame` por escena. Al pausar o perder foco se detienen tanto la escritura como el escenario. Al cambiar de juego se cancela el bucle anterior. La preferencia de movimiento reducido, incluido el ajuste del sistema, elimina el movimiento continuo y las partículas; el progreso se representa de forma estática. El texto y las teclas no se reconstruyen en cada pulsación, para evitar trabajo innecesario durante la escritura.
 
-Las misiones asignadas usan las mismas escenas mejoradas; su variante visual se deriva del orden (posiciones 0–5, 6–11 y 12 en adelante). Esto no cambia textos, requisitos ni puntuaciones del servidor. La celebración final no añade tiempo al cronómetro. La sala libre muestra métricas locales, pero no guarda intentos, puntos o desbloqueos. Repetir conserva el reto elegido y el idioma de su contenido.
+Las misiones asignadas usan las mismas escenas mejoradas; su variante visual se deriva del orden (posiciones 0–5, 6–11 y 12 en adelante). Esto no cambia textos, requisitos ni puntuaciones del servidor. La celebración final no añade tiempo al cronómetro. La sala libre guarda los intentos al entrar como alumno: precisión, PPM, tiempo, errores y valoración orientativa. Las pruebas sin cuenta siguen siendo temporales. La práctica no otorga puntos de clase ni desbloqueos. Repetir conserva el reto elegido y el idioma de su contenido.
 
-Prueba de navegador específica: `python3 tests/browser_arcade.py`. Necesita las mismas herramientas opcionales Playwright y Chromium que el recorrido original.
+Pruebas de navegador específicas: `python3 tests/browser_arcade.py` y `python3 tests/browser_progress.py`. Necesita las mismas herramientas opcionales Playwright y Chromium que el recorrido original.
+
+## Base de datos y progreso de cada alumno
+
+La base SQLite se crea y actualiza automáticamente en **`data/atigra.sqlite3`** al iniciar. No tienes que instalar un servidor de base de datos ni escribir SQL. Las actualizaciones añaden el catálogo de juegos y sus columnas de valoración sin borrar cuentas, asignaciones, contraseñas ni intentos anteriores. Cada reto tiene un identificador estable por idioma. El catálogo contiene 36 niveles del curso y 60 variantes de sala (30 en español y 30 en inglés).
+
+- **Alumno:** entra con su cuenta y abre «Sala de juegos». El resultado confirma el guardado. «Mi progreso» muestra estadísticas y gráficos de práctica, además del historial. En la sala se ve cuántos intentos tiene cada reto y su mejor valoración.
+- **Profesor:** entra con su cuenta y abre «Informes», o el informe de un alumno. Puede filtrar por alumno, clase, nivel y fechas; consultar las prácticas y misiones, errores, precisión, velocidad, tiempo y ATIBOTS, y descargar el CSV. Solo accede al alumnado de su propia cuenta docente.
+- **Sin cuenta:** permite probar todos los juegos; los resultados no se guardan.
+- Las prácticas conservan `feedback_score`, `feedback_bots`, `speed_percent` y `maker_supremo`. Se mantienen separados de los puntos oficiales para no alterar la clasificación ni los desbloqueos. Los errores de decisión se registran incluso si la interfaz permite reintentar inmediatamente.
+
+Los datos sobreviven a cerrar el navegador y reiniciar el programa. Al cambiar de carpeta o descargar una nueva versión, **cierra el servidor y copia la carpeta `data/` de la versión anterior junto al nuevo `server.py` antes de iniciarlo**. No publiques esta carpeta en GitHub. Para una copia en caliente utiliza la API de backup de SQLite; con el servidor apagado puedes copiar la carpeta completa.
+
+Alumno y profesor deben conectarse a la **misma instancia del servidor** para compartir la base. Ejecutar una copia independiente en cada ordenador crea bases independientes. Para usarlo en la misma red puedes arrancar el servidor con `--host 0.0.0.0` y entrar desde la IP del ordenador que lo ejecuta; el alojamiento público sigue requiriendo despliegue.
 
 ## Si el botón de entrada parece no responder
 
@@ -83,7 +100,7 @@ El docente puede crear clases y cuentas, comunicar las credenciales privadamente
 ## Arquitectura
 
 - `server.py`: API HTTP, autorización por propietario, sesiones, validación de eventos, puntuación, clasificación e inicialización.
-- `web/`: interfaz JavaScript, HTML y CSS, con catálogo libre en `arcade.js` y controlador de escenas en `motion.js`, adaptable a ordenador y tablet. Sin compilación ni bibliotecas externas.
+- `web/`: interfaz JavaScript, HTML y CSS, con catálogo único en `arcade.json`, controles de decisión en `arcade.js` y controlador de escenas en `motion.js`, adaptable a ordenador y tablet. Sin compilación ni bibliotecas externas.
 - SQLite con claves foráneas y WAL: usuarios, clases, inscripciones, planetas, niveles, asignaciones, sesiones, ejecuciones, intentos y snapshots semanales.
 - `manage.py`: administración local de cuentas docentes y restablecimiento de contraseñas.
 - `tests/`: pruebas de reglas, API, persistencia, permisos y flujo de navegador.
@@ -189,11 +206,13 @@ Prueba de navegador opcional, con Playwright para Python y Chromium instalado:
 
 ```bash
 python3 tests/browser_smoke.py
+python3 tests/browser_arcade.py
+python3 tests/browser_progress.py
 ```
 
 La prueba usa `/usr/bin/chromium` disponible en este entorno, crea una base temporal y arranca/detiene su propio servidor. En una máquina sin Playwright/Chromium se marca explícitamente como omitida; no valida el navegador allí. Las pruebas de servidor también usan una base temporal. No cambian la base demo ni los resultados del usuario.
 
-Validado en el entorno actual: 18 pruebas de reglas/API (valoración, límites, errores corregidos, Unicode, semanas/DST, acceso, CSRF, persistencia tras salir, cuentas, asignaciones, eliminación, prácticas, clasificación, antimanipulación, CSV y recursos). El flujo Chromium cubre seis modalidades, pausa real, Unicode, progreso tras volver a entrar, ES/EN, foco inicial, tablet, creación de clase/alumno/nivel y CSV. Los resultados finales de ejecución se registran en `VALIDATION.md`.
+Validado en el entorno actual: 32 pruebas de reglas/API, migración, permisos, persistencia y arranque. Los tres recorridos Chromium cubren las diez modalidades, los 30 retos de sala, botones de decisión, errores corregidos, pausa, movimiento reducido, tablet, acceso alumno/docente, CSV y progreso tras reiniciar el servidor. Los resultados de ejecución se registran en `VALIDATION.md`.
 
 ## Usarla online, sin abrir Python
 

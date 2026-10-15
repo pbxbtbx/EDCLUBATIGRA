@@ -13,10 +13,24 @@ window.AtigraMotion = (() => {
       phase = options.phase || 0;
     let pulse = 0,
       rewarded = 0,
+      lane = 1,
+      laneTarget = 1,
+      safeLane = 1,
+      flight = 0,
+      hit = 0,
       resolveCelebration = null,
       celebrationTimer = null;
     const mode = root.dataset.mode;
     const nodes = {
+      lanes: root.querySelectorAll(".flight-lane"),
+      dodge: root.querySelector(".dodge-bot"),
+      rockets: root.querySelectorAll(".incoming-rocket"),
+      decisionBot: root.querySelector(".decision-bot"),
+      collector: root.querySelector(".letter-collector"),
+      letters: root.querySelectorAll(".letter-gem"),
+      jumper: root.querySelector(".platform-jumper"),
+      platforms: root.querySelectorAll(".jump-platform"),
+      radar: root.querySelector(".radar-disc"),
       ship: root.querySelector(".race-ship"),
       meteor: root.querySelectorAll(".meteor"),
       traveler: root.querySelector(".bridge-traveler"),
@@ -63,6 +77,56 @@ window.AtigraMotion = (() => {
         );
       if (nodes.terrain)
         transform(nodes.terrain, `translate3d(${-p * 30}px,0,0)`);
+      root.classList.toggle("decision-hit", hit > 0);
+      if (mode === "rockets") {
+        transform(
+          nodes.dodge,
+          `translate3d(${width * 0.12}px,${38 + lane * 64 + bob}px,0)`,
+        );
+        const blocked = [0, 1, 2].filter((value) => value !== safeLane);
+        nodes.rockets.forEach((node, i) => {
+          const x = reduced
+            ? width * 0.62
+            : width * (0.88 - Math.min(0.78, flight * 0.22));
+          transform(
+            node,
+            `translate3d(${x}px,${55 + blocked[i] * 64}px,0) rotate(180deg)`,
+          );
+        });
+      }
+      if (mode === "reaction") {
+        transform(
+          nodes.decisionBot,
+          `translate3d(${width * (0.34 + lane * 0.08)}px,${66 + bob}px,0) scale(${1 + pulse * 0.08})`,
+        );
+        transform(nodes.radar, `rotate(${reduced ? 0 : phase * 24}deg)`);
+      }
+      if (mode === "collect") {
+        transform(
+          nodes.collector,
+          `translate3d(${width * (0.06 + p * 0.74)}px,${bob}px,0)`,
+        );
+        nodes.letters.forEach((node, i) => {
+          const collected = p >= (i + 1) / nodes.letters.length;
+          node.style.opacity = collected ? 0.12 : 1;
+          transform(
+            node,
+            `translate3d(0,${collected ? -35 : reduced ? 0 : Math.sin(phase * 2 + i) * 5}px,0) scale(${collected ? 0.35 : 1})`,
+          );
+          node.classList.toggle("collected", collected);
+        });
+      }
+      if (mode === "platforms") {
+        const segment = p * (nodes.platforms.length - 1);
+        const hop = reduced ? 0 : Math.sin((segment % 1) * Math.PI) * 44;
+        transform(
+          nodes.jumper,
+          `translate3d(${width * (0.08 + p * 0.78)}px,${-p * 85 - hop}px,0)`,
+        );
+        nodes.platforms.forEach((node, i) =>
+          node.classList.toggle("activated", segment >= i - 0.03),
+        );
+      }
       if (mode === "castle") {
         nodes.meteor.forEach((node, i) => {
           const orbit = reduced ? 0 : Math.sin(phase * 0.7 + i * 2) * 5;
@@ -176,6 +240,9 @@ window.AtigraMotion = (() => {
       const dt = last ? Math.min(0.05, (now - last) / 1000) : 0;
       last = now;
       phase += dt;
+      lane += (laneTarget - lane) * (1 - Math.exp(-14 * dt));
+      flight += dt;
+      hit = Math.max(0, hit - dt);
       progress += (target - progress) * (1 - Math.exp(-9 * dt));
       if (Math.abs(target - progress) < 0.0001) progress = target;
       pulse = Math.max(0, pulse - dt * 1.6);
@@ -212,6 +279,21 @@ window.AtigraMotion = (() => {
     paint();
     schedule();
     return {
+      setSafeLane(value) {
+        safeLane = value;
+        nodes.lanes.forEach((node, i) =>
+          node.classList.toggle("safe-lane", i === value),
+        );
+        paint();
+      },
+      decision(value, correct) {
+        if (value >= 0) laneTarget = value;
+        if (reduced) lane = laneTarget;
+        flight = 0;
+        hit = correct ? 0 : 0.45;
+        pulse = reduced ? 0 : 1;
+        paint();
+      },
       setTarget(value, units = 0) {
         target = Math.max(0, Math.min(1, value));
         if (units > rewarded) {

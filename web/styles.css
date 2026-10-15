@@ -2550,3 +2550,211 @@ button.nav-back:focus-visible {
     transform: scale(0.5);
   }
 }
+
+/* Four interactive adventures, animated by the shared time-based RAF loop. */
+.scene-rockets {
+  background: linear-gradient(120deg, #11172e, #332353);
+}
+.scene-reaction {
+  background: radial-gradient(ellipse, #123d47, #111b34);
+}
+.scene-collect {
+  background: linear-gradient(#152c42, #315a59);
+}
+.scene-platforms {
+  background: linear-gradient(#262548, #484069);
+}
+.flight-lane {
+  position: absolute;
+  left: 8%;
+  right: 8%;
+  top: calc(55px + var(--lane) * 64px);
+  height: 56px;
+  border-bottom: 1px dashed #b7c9eb60;
+}
+.dodge-bot,
+.incoming-rocket,
+.decision-bot,
+.letter-collector,
+.platform-jumper {
+  position: absolute;
+  left: 0;
+  top: 0;
+  will-change: transform;
+}
+.dodge-bot .bot {
+  transform: scale(0.65);
+  transform-origin: top left;
+}
+.incoming-rocket {
+  width: 80px;
+  height: 40px;
+}
+.incoming-rocket .rocket-art {
+  width: 80px;
+  height: 40px;
+}
+.decision-hit .dodge-bot,
+.decision-hit .decision-bot {
+  filter: drop-shadow(0 0 12px #ff6191);
+}
+.decision-controls {
+  margin: 16px 0;
+  padding: 20px;
+  border: 2px solid #c8c3e5;
+  border-radius: 18px;
+  background: #fff;
+  text-align: center;
+}
+.decision-prompt {
+  margin: 0 0 14px;
+  font-size: 1.1rem;
+}
+.decision-prompt strong {
+  display: inline-block;
+  min-width: 56px;
+  margin-left: 8px;
+  padding: 8px;
+  background: #20263f;
+  color: #b8ff9e;
+  border-radius: 10px;
+  font:
+    900 1.6rem "Courier New",
+    monospace;
+}
+.decision-options {
+  display: flex;
+  justify-content: center;
+  gap: 14px;
+}
+.decision-choice {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-height: 60px;
+  min-width: 76px;
+  justify-content: center;
+  background: #f0ecff;
+  border: 2px solid #8471b5;
+  color: #282040;
+  border-radius: 12px;
+  cursor: pointer;
+}
+.decision-choice strong {
+  font:
+    900 1.5rem "Courier New",
+    monospace;
+}
+.decision-choice span {
+  font-size: 0.7rem;
+  color: #66577e;
+}
+.decision-choice:hover {
+  background: #d9facd;
+  border-color: #348222;
+}
+.decision-choice:focus-visible {
+  outline: 3px solid #cc0b4e;
+  outline-offset: 4px;
+}
+.decision-choice:disabled {
+  opacity: 0.45;
+  cursor: default;
+}
+.radar-disc {
+  position: absolute;
+  width: 200px;
+  height: 200px;
+  left: calc(50% - 100px);
+  top: 20px;
+  border: 2px solid #7ee9ab70;
+  border-radius: 50%;
+  background: conic-gradient(transparent 280deg, #55e39955);
+}
+.radar-orbits {
+  position: absolute;
+  inset: 60px 20%;
+  border: 1px solid #7ee9ab40;
+  border-radius: 50%;
+}
+.letter-collector {
+  top: 138px;
+}
+.letter-gem {
+  position: absolute;
+  top: 110px;
+  width: 30px;
+  height: 35px;
+  display: grid;
+  place-items: center;
+  border-radius: 8px;
+  color: #112b20;
+  background: #a1f18d;
+  border: 2px solid #e1ffbf;
+  font:
+    900 18px "Courier New",
+    monospace;
+  will-change: transform;
+}
+.platform-jumper {
+  top: auto;
+  bottom: 60px;
+}
+.platform-jumper .bot {
+  transform: scale(0.7);
+  transform-origin: bottom left;
+}
+.jump-platform {
+  position: absolute;
+  width: 50px;
+  height: 18px;
+  border-radius: 7px;
+  background: #6b6590;
+  border: 2px solid #a399ce;
+  color: #fff;
+  font-size: 10px;
+  text-align: center;
+}
+.jump-platform.activated {
+  background: #54b743;
+  border-color: #c2ffa0;
+  box-shadow: 0 0 15px #70eb4760;
+}
+@media (max-width: 480px) {
+  .decision-controls {
+    padding: 14px 8px;
+  }
+  .decision-options {
+    gap: 8px;
+  }
+  .decision-choice {
+    min-width: 64px;
+  }
+  .letter-gem {
+    width: 22px;
+    font-size: 14px;
+  }
+  .jump-platform {
+    width: 32px;
+  }
+}
+
+.flight-lane b {
+  position: absolute;
+  left: -18px;
+  top: 12px;
+  color: #d9d5eb;
+  font: 700 12px monospace;
+}
+.flight-lane.safe-lane {
+  background: #64dc4a10;
+  border-color: #91f078;
+  border-radius: 10px;
+}
+.dodge-bot .bot {
+  transform: scale(0.8);
+}
+.stage-history {
+  color: #286426;
+  font-weight: 700;
+}

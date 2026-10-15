@@ -25,12 +25,12 @@ except ImportError:
     "Install Playwright and Chromium for browser validation",
 )
 class BrowserFlow(unittest.TestCase):
-    def test_six_games_teacher_student_and_accessibility(self):
+    def test_ten_games_teacher_student_and_accessibility(self):
         with tempfile.TemporaryDirectory() as temp:
             old = server.DB_PATH
             server.DB_PATH = temp + "/browser.sqlite3"
             server.seed()
-            # Test fixture: six short, independent missions. Product seed is untouched.
+            # Test fixture: ten short, independent missions. Product seed is untouched.
             with server.connect() as db:
                 for i, mode in enumerate(server.MODES, 1):
                     db.execute(
@@ -264,7 +264,7 @@ class BrowserFlow(unittest.TestCase):
                     page.reload()
                     page.locator('[data-demo="nova.demo"]').click()
                     page.wait_for_selector(".planet-card")
-                    self.assertEqual(len(page.evaluate("state.student.attempts")), 6)
+                    self.assertEqual(len(page.evaluate("state.student.attempts")), 10)
                     # Tablet layout avoids page-level horizontal scrolling.
                     page.set_viewport_size({"width": 768, "height": 1024})
                     self.assertLessEqual(
