@@ -1,6 +1,11 @@
 "use strict";
 const dictionary = {
   es: {
+    ratingTitle: "Tu valoración",
+    speedPercent: "Velocidad del objetivo",
+    practiceRatingNote: "Valoración de práctica: no suma puntos de clase.",
+    makerMessage: "¡100 % de precisión y objetivo de velocidad conseguido!",
+    nextTrial: "Avanzar de nivel",
     arcade: "Sala de juegos",
     arcadeIntro:
       "Elige una aventura y su dificultad. 18 retos para practicar a tu ritmo, sin cuenta atrás.",
@@ -320,6 +325,11 @@ const dictionary = {
     badgeProgress: "Completa misiones para ganar reconocimientos.",
   },
   en: {
+    ratingTitle: "Your rating",
+    speedPercent: "Target speed",
+    practiceRatingNote: "Practice rating: does not add class points.",
+    makerMessage: "100% accuracy and speed target reached!",
+    nextTrial: "Next level",
     arcade: "Game room",
     arcadeIntro:
       "Choose an adventure and its difficulty. 18 challenges to practice at your own pace, with no countdown.",
@@ -1572,6 +1582,11 @@ function bindGame() {
     };
     if ($("#result-next"))
       $("#result-next").onclick = () => {
+        if (g.guest) {
+          const next = nextGuestStage(g);
+          if (next) startGuestGame(next.id, g.level.language);
+          return;
+        }
         const next = nextLevel();
         state.game = null;
         if (next) startGame(next.level_id, false);
@@ -1723,9 +1738,31 @@ async function abandon(page = "map", rerender = true) {
     else await refresh();
   }
 }
+// Practice ratings are feedback only; assessed ratings come from the server.
+function resultRating(attempt, target) {
+  const speed = Math.min(100, (attempt.wpm / target) * 100);
+  const score = 0.75 * attempt.accuracy + 0.25 * speed;
+  let count = 1 + [50, 65, 80, 95].filter((value) => score >= value).length;
+  if (attempt.accuracy < 80) count = Math.min(count, 2);
+  else if (attempt.accuracy < 90) count = Math.min(count, 3);
+  if (attempt.accuracy < 97 || attempt.wpm < target) count = Math.min(count, 4);
+  return {
+    bots: attempt.bots ?? count,
+    score: attempt.score ?? score,
+    speed,
+    supreme: attempt.accuracy === 100 && attempt.wpm >= target,
+  };
+}
+function nextGuestStage(game) {
+  const levels = window.AtigraArcade.levels;
+  return levels[
+    levels.findIndex((level) => level.id === game.level.stage_id) + 1
+  ];
+}
 function resultView() {
   const g = state.game,
     { attempt: a, previous } = g.result;
+  const rating = resultRating(a, g.level.target_wpm);
   const errors = JSON.parse(a.errors);
   const advice =
     a.accuracy < 90
@@ -1733,7 +1770,7 @@ function resultView() {
       : a.wpm < g.level.target_wpm
         ? "speedAdvice"
         : "greatAdvice";
-  return `<section class="result game-layout"><span class="eyebrow">${esc(g.level.name)} · ${g.level.language.toUpperCase()}</span><h1>${t(g.guest ? "guestComplete" : g.practice ? "practiceResult" : "resultTitle")}</h1><p class="muted">${t("resultSub")}</p>${g.practice ? `<div class="hero-art" style="margin:auto">${bot("", "surprised")}</div>` : bots(a.bots)}<div class="stats">${stat(number(a.accuracy) + "%", "accuracy", "◎")}${stat(number(a.wpm), "wpm", "↯")}${stat(duration(a.active_ms), "time", "◷")}${stat(a.score === null ? "—" : number(a.score), "score", "✧")}</div><p class="result-message">${t(advice)}</p><div class="form-grid"><section class="panel"><h2>${t("errors")}</h2><p class="pixel">${Object.keys(errors).length ? errorKeys(errors) : t("noErrors")}</p><p class="small muted">${t("errorsCorrected")}</p></section><section class="panel"><h2>${t("previous")}</h2>${previous ? `<p>${t("accuracy")}: <strong>${number(a.accuracy - previous.accuracy)} pp</strong><br>${t("wpm")}: <strong>${number(a.wpm - previous.wpm)}</strong></p>` : `<p class="muted">${t(g.guest ? "guestHint" : "firstAttempt")}</p>`}</section></div><div class="row" style="justify-content:center"><button class="secondary" id="result-back">${t(g.guest ? "guestBack" : "back")}</button><button class="secondary" id="result-repeat">${t("repeat")}</button>${!g.practice ? `<button class="primary" id="result-next">${t("next")} →</button>` : ""}</div></section>`;
+  return `<section class="result game-layout"><span class="eyebrow">${esc(g.level.name)} · ${g.level.language.toUpperCase()}</span><h1>${t(g.guest ? "guestComplete" : g.practice ? "practiceResult" : "resultTitle")}</h1><p class="muted">${t("resultSub")}</p><div class="rating-panel ${rating.supreme ? "rating-supreme" : ""}"><h2>${t("ratingTitle")} · ${rating.bots}/5 ATIBOTS</h2>${bots(rating.bots)}${rating.supreme ? `<strong class="maker-supremo">MAKER SUPREMO</strong><p>${t("makerMessage")}</p>` : ""}<p>${t("speedPercent")}: <strong>${number(rating.speed)} %</strong> · ${number(g.level.target_wpm)} ${t("wpm")}</p>${g.practice ? `<p class="small muted">${t("practiceRatingNote")}</p>` : ""}</div><div class="stats">${stat(number(a.accuracy) + "%", "accuracy", "◎")}${stat(number(a.wpm), "wpm", "↯")}${stat(duration(a.active_ms), "time", "◷")}${stat(number(rating.score), "score", "✧")}</div><p class="result-message">${t(advice)}</p><div class="form-grid"><section class="panel"><h2>${t("errors")}</h2><p class="pixel">${Object.keys(errors).length ? errorKeys(errors) : t("noErrors")}</p><p class="small muted">${t("errorsCorrected")}</p></section><section class="panel"><h2>${t("previous")}</h2>${previous ? `<p>${t("accuracy")}: <strong>${number(a.accuracy - previous.accuracy)} pp</strong><br>${t("wpm")}: <strong>${number(a.wpm - previous.wpm)}</strong></p>` : `<p class="muted">${t(g.guest ? "guestHint" : "firstAttempt")}</p>`}</section></div><div class="row" style="justify-content:center"><button class="secondary nav-back" id="result-back">${t(g.guest ? "guestBack" : "back")}</button><button class="secondary nav-repeat" id="result-repeat">${t("repeat")}</button>${!g.practice || (g.guest && nextGuestStage(g)) ? `<button class="primary nav-next" id="result-next">${t("nextTrial")} →</button>` : ""}</div></section>`;
 }
 function rewardSound() {
   if (!state.sound) return;

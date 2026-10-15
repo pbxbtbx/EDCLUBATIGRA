@@ -2477,3 +2477,76 @@ h2,
 .modal.arcade-modal {
   max-width: 1040px;
 }
+
+/* Result rewards and distinct navigation actions. */
+.rating-panel {
+  margin: 24px auto;
+  padding: 24px 16px;
+  max-width: 680px;
+  border: 2px solid var(--pink, #ed1965);
+  border-radius: 20px;
+  background: #191526;
+}
+.rating-panel .bots {
+  justify-content: center;
+}
+.rating-supreme {
+  border-color: #65db4e;
+  box-shadow: 0 0 28px #65db4e30;
+}
+.maker-supremo {
+  display: block;
+  margin-top: 18px;
+  color: #9df47b;
+  font:
+    900 clamp(1.3rem, 5vw, 2rem) / 1.4 "Courier New",
+    monospace;
+  letter-spacing: 0.08em;
+}
+button.nav-back {
+  background: #b90c4b;
+  border-color: #ff71a3;
+  color: white;
+  font-family: Arial, sans-serif;
+  font-weight: 700;
+}
+button.nav-next {
+  background: #80e267;
+  border-color: #b3ff9c;
+  color: #10230c;
+  font-family: "Courier New", monospace;
+  font-weight: 900;
+  letter-spacing: 0.04em;
+}
+button.nav-repeat {
+  font-family: Arial, sans-serif;
+  border-color: #ba9bff;
+}
+button.nav-next:hover,
+button.nav-back:hover {
+  filter: brightness(1.12);
+}
+button.nav-next:focus-visible,
+button.nav-back:focus-visible {
+  outline: 3px solid white;
+  outline-offset: 4px;
+}
+
+.rating-panel {
+  color: #faf6ff;
+}
+.rating-panel .muted {
+  color: #cbc2d9;
+}
+@media (max-width: 480px) {
+  .rating-panel .bots {
+    gap: 4px;
+  }
+  .result .rating-panel .bot-slot {
+    width: 40px;
+    height: 46px;
+  }
+  .result .rating-panel .bot.tiny {
+    transform: scale(0.5);
+  }
+}

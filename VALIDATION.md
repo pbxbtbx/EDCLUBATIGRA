@@ -94,3 +94,13 @@ Validación ejecutada:
 - Sintaxis JavaScript y `git diff --check`: correctos.
 
 Las comprobaciones se hicieron en Chromium/Linux. No se midió una tasa de fotogramas garantizada en los equipos del alumnado ni se ejecutaron navegadores de Windows o Safari. La implementación interpola por tiempo y respeta las preferencias de movimiento; la fluidez efectiva también depende del dispositivo. No se ha desplegado una web pública por estos cambios.
+
+## Valoración con ATIBOTS y MAKER SUPREMO (2026-10-15)
+
+- Todos los resultados completos muestran cinco espacios de ATIBOTS, con entre uno y cinco conseguidos. La práctica calcula una valoración orientativa sin guardar puntos oficiales; las misiones evaluadas mantienen la valoración del servidor y las reglas de clase.
+- MAKER SUPREMO exige precisión exactamente del 100 % y PPM al menos iguales al objetivo. Se muestra el porcentaje de velocidad, limitado al 100 %.
+- Avanzar lleva al siguiente reto de práctica; Volver y Avanzar tienen colores, tipografías y foco visible distintos.
+- `python3 -m unittest discover -s tests -q`: 30 pruebas superadas.
+- `python3 tests/browser_arcade.py`: superado en Chromium; 18 retos completos, cinco ATIBOTS y distinción, límites de precisión/velocidad sin redondear, respeto a resultados oficiales, avance efectivo, colores y fuentes distintos, y comprobaciones existentes de animación/accesibilidad.
+- `python3 tests/browser_smoke.py`: superado en Chromium; prueba con error corregido, seis modalidades evaluadas, acceso alumno/docente, historial, idiomas y acciones del profesor.
+- `node --check web/app.js` y `git diff --check`: sin errores.

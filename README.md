@@ -103,7 +103,7 @@ Esta arquitectura permite una primera versión local verificable con una instala
   - Dragón: completar palabras recupera piezas y devuelve el color al dragón.
   - Exploración: completar instrucciones mueve a ATIBOT y recoge recursos.
   - Portal: cada carácter correcto carga y amplía el portal.
-- Práctica sin presión: sin cuenta atrás ni castigos; conserva el intento, pero no da valoración, desbloqueos ni puntos.
+- Práctica sin presión: sin cuenta atrás ni castigos; conserva el intento y muestra una valoración orientativa de 1 a 5 ATIBOTS, pero no da desbloqueos ni puntos de clase.
 - Historial, mejor intento por puntuación, evolución, precisión, PPM, tiempo activo, errores, ATIBOTS acumulados e insignias derivadas del progreso real.
 - Clasificación de clase opcional, historial semanal y reconocimientos individuales.
 - ES/EN en navegación, formularios, instrucciones y resultados. El idioma de interfaz no cambia el contenido asignado.
@@ -128,6 +128,8 @@ El servidor reconstruye el texto a partir de eventos, valida sus tiempos y calcu
 - Velocidad: `min(100, PPM / objetivo × 100)`.
 - Puntuación inicial: `0.75 × precisión + 0.25 × velocidad`.
 - Umbrales: 50, 65, 80 y 95 para 2, 3, 4 y 5 ATIBOTS.
+- Al completar cualquier juego se muestran cinco espacios de ATIBOTS, con los conseguidos iluminados. En práctica la valoración es orientativa con las reglas iniciales; en misiones evaluadas se respeta la configuración de clase y la puntuación del servidor.
+- **MAKER SUPREMO**: precisión exactamente del 100 % y velocidad al menos igual al objetivo del nivel (100 % de velocidad). Corregir un error impide esta distinción.
 - Precisión <80%: máximo 2; <90%: máximo 3; 5 exige ≥97% y alcanzar el objetivo.
 - Desbloqueo inicial: superar 90% en el requisito previo. Una misión se puede repetir aunque otro intento ya la haya superado. Basta cualquier intento completo evaluado que cumpla el umbral.
 - El mejor intento es el de mayor puntuación; el historial completo permanece disponible. Las valoraciones acumuladas suman las mejores por misión.

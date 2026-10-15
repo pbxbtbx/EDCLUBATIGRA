@@ -193,8 +193,68 @@ class ArcadeFlow(unittest.TestCase):
                                 page.evaluate("state.game.result.attempt.score")
                             )
                             self.assertEqual(
+                                page.locator(
+                                    ".rating-panel .bot-slot:not(.empty)"
+                                ).count(),
+                                5,
+                            )
+                            self.assertEqual(
+                                page.locator(".maker-supremo").inner_text(),
+                                "MAKER SUPREMO",
+                            )
+                            self.assertEqual(
+                                page.locator(".rating-panel .bot-slot").count(), 5
+                            )
+                            self.assertEqual(
                                 page.evaluate("AtigraMotion.activeLoops()"), 0
                             )
+                        # Exact accuracy and the speed threshold both matter, even when rounded UI values look perfect.
+                        for accuracy, wpm, expected_bots, supreme in [
+                            (100, 10, 5, True),
+                            (100, 9.999, 4, False),
+                            (99.999, 10, 5, False),
+                            (79, 20, 2, False),
+                            (89, 20, 3, False),
+                            (0, 0, 1, False),
+                        ]:
+                            rating = page.evaluate(
+                                "([accuracy,wpm]) => resultRating({accuracy,wpm,bots:null,score:null},10)",
+                                [accuracy, wpm],
+                            )
+                            self.assertEqual(rating["bots"], expected_bots)
+                            self.assertEqual(rating["supreme"], supreme)
+                        authoritative = page.evaluate(
+                            "resultRating({accuracy:98,wpm:20,bots:3,score:77},10)"
+                        )
+                        self.assertEqual(authoritative["bots"], 3)
+                        self.assertEqual(authoritative["score"], 77)
+                        # Forward navigation starts the next trial and differs visually from Back.
+                        page.locator("#result-back").click()
+                        page.locator("#try-game").click()
+                        page.locator("#type-input").press_sequentially(
+                            page.evaluate("state.game.level.text"), delay=1
+                        )
+                        page.wait_for_selector("#result-next")
+                        styles = page.evaluate(
+                            "['#result-next','#result-back'].map(id => {const s=getComputedStyle(document.querySelector(id)); return [s.backgroundColor,s.fontFamily]})"
+                        )
+                        self.assertNotEqual(styles[0][0], styles[1][0])
+                        self.assertNotEqual(styles[0][1], styles[1][1])
+                        page.locator("#result-next").click()
+                        page.wait_for_selector("#type-input")
+                        self.assertEqual(
+                            page.evaluate("state.game.level.stage_id"), "castle-2"
+                        )
+                        page.locator("#type-input").press_sequentially(
+                            page.evaluate("state.game.level.text"), delay=1
+                        )
+                        page.wait_for_selector("#result-back")
+                        # Restore the last stage for repeat/language checks.
+                        page.evaluate("startGuestGame('portal-3','es')")
+                        page.locator("#type-input").press_sequentially(
+                            page.evaluate("state.game.level.text"), delay=1
+                        )
+                        page.wait_for_selector("#result-back")
                         # Repeating preserves the chosen mission, including after a UI language switch.
                         page.locator('[data-language="en"]').click()
                         page.locator("#result-repeat").click()
