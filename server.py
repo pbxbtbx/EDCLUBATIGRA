@@ -19,6 +19,8 @@ BUILD_ID = hashlib.sha256(
             "web/app.js",
             "web/index.html",
             "resources/timezones/Europe-Madrid.tzif",
+            "web/assets/atigra-makers-oficial.svg",
+            "web/assets/atibot-expresiones.png",
         )
     )
 ).hexdigest()[:12]
@@ -589,6 +591,8 @@ class Handler(BaseHTTPRequestHandler):
                     "/": "index.html",
                     "/app.js": "app.js",
                     "/styles.css": "styles.css",
+                    "/assets/atigra-makers-oficial.svg": "assets/atigra-makers-oficial.svg",
+                    "/assets/atibot-expresiones.png": "assets/atibot-expresiones.png",
                 }
                 require(path in names, "not_found", 404)
                 file = ROOT / "web" / names[path]
@@ -598,6 +602,8 @@ class Handler(BaseHTTPRequestHandler):
                         ".html": "text/html; charset=utf-8",
                         ".js": "text/javascript; charset=utf-8",
                         ".css": "text/css; charset=utf-8",
+                        ".svg": "image/svg+xml",
+                        ".png": "image/png",
                     }[file.suffix],
                 )
             data = {}

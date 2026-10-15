@@ -1,6 +1,6 @@
 # ATIBOT Academy · Atigra Makers
 
-Aplicación de mecanografía educativa ejecutable, con backend real, autenticación, base de datos y gestión docente. Identidad magenta `#cc0b4e`, verde `#45ae46`, superficies espaciales y un **ATIBOT provisional dibujado en CSS**, sustituible y no oficial.
+Aplicación de mecanografía educativa ejecutable, con backend real, autenticación, base de datos y gestión docente. Identidad magenta `#cc0b4e`, verde `#45ae46`, superficies espaciales y el **logo oficial facilitado por el usuario** y ATIBOT adaptado a partir de su imagen, con expresiones curiosa, pensativa y sorprendida y ojos abiertos de fondo blanco.
 
 ## Ejecutar en tu ordenador
 
@@ -30,6 +30,14 @@ El proceso debe permanecer activo. Su reinicio conserva los datos en `data/atigr
 Requiere Python 3.11 o superior instalado en ese ordenador. No necesita hosting, cuenta de Render ni conexión para usar las misiones. El progreso se guarda en `data/`; conserva esa carpeta al actualizar. Si el navegador no se abre, escribe `http://127.0.0.1:8000` en Chrome, Edge o Firefox **en ese mismo ordenador**. Esta dirección no es un enlace público y solo funciona donde está arrancado el programa.
 
 En Mac puedes ejecutar `python3 iniciar.py` en la carpeta del proyecto o usar `INICIAR_MAC.command` si el sistema permite ejecutarlo. `python iniciar.py --port 8001` permite elegir otro puerto. `--no-browser` arranca sin abrir una ventana de navegador, útil para comprobaciones automáticas. El lanzador comprueba la versión y la carpeta de la instancia antes de reutilizarla. Si el puerto está ocupado por otra versión, elige automáticamente otro y abre esa dirección: usa la pestaña nueva que abre el programa.
+
+## Probar un juego sin iniciar sesión
+
+En la pantalla de entrada pulsa el botón verde **«Probar un juego sin cuenta»**. Se abre **Defensa del castillo orbital · Escudos de prueba**. Escribe el texto mostrado: cada palabra completa carga los escudos y aleja el meteorito; ATIBOT cambia de expresión durante la misión.
+
+Se puede pausar, corregir con Retroceso, terminar y repetir. El resultado muestra precisión, PPM, tiempo y errores corregidos. La prueba funciona sin credenciales y **no crea usuarios, sesiones, ejecuciones ni intentos en la base de datos**, ni otorga puntos o desbloqueos. Las misiones del alumnado y su progreso persistente siguen requiriendo autenticación. La prueba es local en la memoria de esa pestaña y se pierde al cerrarla.
+
+La identidad incluye la frase «Si puedes imaginarlo y soñarlo, puedes crearlo y programarlo» en la bienvenida y en el pie de la aplicación. La interfaz inglesa tiene su traducción, conservando el idioma del texto de la misión iniciada.
 
 ## Si el botón de entrada parece no responder
 
@@ -145,7 +153,7 @@ Contraseñas con scrypt y sal aleatoria; sesión opaca aleatoria en cookie HttpO
 
 La API comprueba el rol y propietario de clase/alumno/contenido, y los alumnos solo reciben sus asignaciones e intentos. La tabla semanal solo devuelve alias y métricas. Los controles antimanipulación comprueban propiedad y uso único de la ejecución, texto exacto completado, eventos de un carácter, tiempos ordenados, duración frente al reloj del servidor y velocidad máxima plausible (220 PPM). **Esto no demuestra que una persona haya tecleado: un cliente modificado puede fabricar eventos plausibles.** Es protección básica, no un sistema competitivo resistente a automatización.
 
-ATIBOT es provisional. Se usan dibujos CSS y algunos pictogramas del sistema; no se incorporaron recursos oficiales porque el repositorio no los contiene. El estilo retro utiliza fuentes monoespaciadas locales; no necesita descargar fuentes. Sonido de recompensa generado localmente, inicialmente silenciado; movimiento reducible y respetando la preferencia del sistema. Foco visible, enlaces de salto, etiquetas y diálogo con confinamiento de foco. No se ha realizado una auditoría exhaustiva con lector de pantalla ni evaluación pedagógica con menores.
+El logo SVG oficial se conserva sin modificar en `web/assets/atigra-makers-oficial.svg`. Las tres expresiones de ATIBOT se generaron a petición del usuario a partir de su imagen y se sirven como un sprite PNG transparente. Su procedencia se describe en `web/assets/README.md`. Los escenarios mantienen dibujos CSS y algunos pictogramas del sistema. El estilo retro utiliza fuentes monoespaciadas locales; no necesita descargar fuentes. Sonido de recompensa generado localmente, inicialmente silenciado; movimiento reducible y respetando la preferencia del sistema. Foco visible, enlaces de salto, etiquetas y diálogo con confinamiento de foco. No se ha realizado una auditoría exhaustiva con lector de pantalla ni evaluación pedagógica con menores.
 
 ## Comprobaciones
 

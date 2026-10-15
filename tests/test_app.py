@@ -279,6 +279,19 @@ class ApiTests(unittest.TestCase):
             )
             self.assertEqual(status, 200, report)
 
+    def test_public_brand_assets_are_served_without_account(self):
+        client = Client(self.base)
+        status, svg = client.request("/assets/atigra-makers-oficial.svg")
+        self.assertEqual(status, 200)
+        self.assertEqual(
+            svg, (server.ROOT / "web/assets/atigra-makers-oficial.svg").read_bytes()
+        )
+        status, png = client.request("/assets/atibot-expresiones.png")
+        self.assertEqual(status, 200)
+        self.assertTrue(png.startswith(b"\x89PNG\r\n\x1a\n"))
+        self.assertEqual(client.request("/assets/../server.py")[0], 404)
+        self.assertEqual(client.request("/assets/README.md")[0], 404)
+
     def test_seed_and_roles(self):
         status, report = self.teacher.request("/api/teacher")
         self.assertEqual(status, 200)

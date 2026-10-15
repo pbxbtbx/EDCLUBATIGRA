@@ -430,109 +430,28 @@ main {
 }
 .bot {
   display: inline-block;
-  position: relative;
   width: 76px;
-  height: 90px;
+  height: 76px;
   flex-shrink: 0;
-  filter: drop-shadow(0 12px 12px #0002);
+  background-image: url("/assets/atibot-expresiones.png");
+  background-size: 300% 100%;
+  background-repeat: no-repeat;
+  background-position: 0% 50%;
+  vertical-align: middle;
 }
-.bot .antenna {
-  position: absolute;
-  width: 5px;
-  height: 15px;
-  background: #a8b0c3;
-  top: 0;
-  left: 35px;
+.bot.expression-thinking {
+  background-position: 50% 50%;
 }
-.bot .antenna:before {
-  content: "";
-  position: absolute;
-  top: -6px;
-  left: -4px;
-  width: 13px;
-  height: 13px;
-  border-radius: 50%;
-  background: var(--pink);
-}
-.bot .head {
-  position: absolute;
-  top: 13px;
-  left: 5px;
-  width: 66px;
-  height: 47px;
-  background: #f0f3f8;
-  border: 3px solid #cbd0db;
-  border-radius: 13px;
-}
-.bot .face {
-  position: absolute;
-  inset: 8px 5px;
-  background: #1c2340;
-  border-radius: 7px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 12px;
-}
-.bot .eye {
-  width: 9px;
-  height: 10px;
-  border-radius: 3px;
-  background: #77e08a;
-  box-shadow: 0 0 7px #77e08a44;
-}
-.bot .body {
-  position: absolute;
-  top: 60px;
-  left: 17px;
-  width: 42px;
-  height: 25px;
-  border-radius: 5px 5px 13px 13px;
-  background: #dce0e9;
-  border: 2px solid #b7bdcd;
-}
-.bot .body:before {
-  content: "A";
-  position: absolute;
-  top: 1px;
-  left: 13px;
-  color: var(--pink);
-  font-weight: 900;
-  font-size: 15px;
-}
-.bot .arm {
-  position: absolute;
-  top: 63px;
-  width: 11px;
-  height: 18px;
-  background: #b6bece;
-  border-radius: 6px;
-  left: 2px;
-  transform: rotate(20deg);
-}
-.bot .arm.right {
-  left: 63px;
-  transform: rotate(-20deg);
-}
-.bot .foot {
-  position: absolute;
-  top: 83px;
-  left: 17px;
-  width: 15px;
-  height: 7px;
-  background: #8993aa;
-  border-radius: 3px;
-}
-.bot .foot.right {
-  left: 44px;
+.bot.expression-surprised {
+  background-position: 100% 50%;
 }
 .bot.big {
   transform: scale(1.6);
 }
 .bot.tiny {
-  width: 19px;
-  height: 23px;
-  transform: scale(0.24);
+  width: 76px;
+  height: 76px;
+  transform: scale(0.25);
   transform-origin: top left;
   margin-right: 0;
   filter: none;
@@ -1711,4 +1630,162 @@ h2,
 .primary {
   font-family: "Courier New", ui-monospace, monospace;
   font-weight: 900;
+}
+
+/* Official identity and the user-supplied ATIBOT character adaptations. */
+.brand-wrap {
+  background: #fff;
+  border-radius: 13px;
+  padding: 12px;
+}
+.brand-image {
+  display: block;
+  width: 100%;
+  max-width: 250px;
+  height: auto;
+}
+.brand-wrap .brand-sub {
+  color: #55566b;
+  letter-spacing: 2px;
+  text-align: center;
+  margin-top: 6px;
+}
+.login-space > .brand-wrap {
+  width: 270px;
+  max-width: 90%;
+  z-index: 1;
+}
+.login-space .brand-sub {
+  color: #55566b;
+}
+.brand-motto {
+  margin: 22px 0 0;
+  padding: 0 0 0 15px;
+  border-left: 3px solid var(--green);
+  font-size: 16px;
+  font-weight: 650;
+  line-height: 1.65;
+}
+.login-space .brand-motto {
+  max-width: 430px;
+  color: #fff;
+  font-size: 17px;
+}
+.footer-motto {
+  color: #53536d;
+  font-size: 12px;
+  margin-top: 18px;
+}
+.try-game {
+  margin: 20px 0 25px;
+  border: 1px solid #b9dcbc;
+  background: #eff8f0;
+  border-radius: 15px;
+  padding: 17px;
+}
+.try-game .eyebrow {
+  color: #286a30;
+  font-size: 9px;
+  letter-spacing: 1px;
+}
+.try-game h3 {
+  margin: 10px 0 5px;
+  font-size: 17px;
+}
+.try-game p {
+  font-size: 12px;
+  margin-bottom: 13px;
+  color: #3c6240;
+}
+.login-form .try-game .primary {
+  margin: 0;
+  background: #45ae46;
+  border-color: #45ae46;
+  color: #051d09;
+  font-size: 13px;
+}
+.guest-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  background: white;
+  border-bottom: 1px solid var(--line);
+  padding: 12px max(20px, calc((100vw - 1000px) / 2));
+}
+.guest-header .brand-wrap {
+  width: 190px;
+  padding: 0;
+  flex-shrink: 0;
+}
+.guest-header .brand-sub {
+  font-size: 8px;
+}
+.guest-shell main {
+  max-width: 1040px;
+}
+.guest-shell .brand-motto {
+  text-align: center;
+}
+@media (max-width: 760px) {
+  .sidebar .brand-wrap {
+    width: 145px;
+    flex-shrink: 0;
+  }
+  .login-space {
+    min-height: 400px;
+  }
+  .login-space > .brand-wrap {
+    width: 200px;
+  }
+  .login-space .brand-motto {
+    max-width: 70%;
+    font-size: 13px;
+    margin-top: 18px;
+  }
+  .guest-header {
+    padding: 12px 16px;
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+  .guest-header .brand-wrap {
+    width: 150px;
+  }
+  .guest-header .secondary {
+    font-size: 11px;
+    padding: 8px;
+  }
+  .try-game {
+    padding: 15px;
+  }
+}
+
+.stat-bot {
+  display: inline-block;
+  width: 30px;
+  height: 30px;
+}
+.stat-bot .bot {
+  width: 30px;
+  height: 30px;
+}
+.login-art {
+  height: 200px;
+}
+.login-art .bot {
+  width: 185px;
+  height: 185px;
+  transform: none;
+}
+@media (max-width: 760px) {
+  .login-art {
+    height: 135px;
+    right: 20px;
+    bottom: 45px;
+  }
+  .login-art .bot {
+    width: 135px;
+    height: 135px;
+    transform: none;
+  }
 }

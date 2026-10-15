@@ -72,6 +72,73 @@ class BrowserFlow(unittest.TestCase):
                     errors = []
                     page.on("pageerror", lambda e: errors.append(str(e)))
                     page.goto(f"http://127.0.0.1:{port}")
+                    # The public trial must work without credentials or recorded attempts.
+                    page.wait_for_selector("#try-game")
+                    self.assertIn(
+                        "Si puedes imaginarlo y soñarlo, puedes crearlo y programarlo",
+                        page.locator("body").inner_text(),
+                    )
+                    self.assertTrue(
+                        page.locator(".brand-image").evaluate(
+                            "img => img.complete && img.naturalWidth > 0"
+                        )
+                    )
+                    guest_requests = []
+                    page.on(
+                        "request",
+                        lambda request: (
+                            guest_requests.append(request.url)
+                            if "/api/run" in request.url
+                            or "/api/attempt" in request.url
+                            else None
+                        ),
+                    )
+                    page.locator("#try-game").click()
+                    page.wait_for_selector("#type-input")
+                    self.assertIsNone(page.evaluate("state.user"))
+                    self.assertTrue(page.evaluate("state.game.guest"))
+                    text = page.evaluate("state.game.level.text")
+                    page.locator("#type-input").press("x")
+                    page.locator("#type-input").press("Backspace")
+                    page.locator("#type-input").press_sequentially(text[:5], delay=70)
+                    page.locator("#pause-button").click()
+                    self.assertTrue(page.locator("#type-input").is_disabled())
+                    page.locator('[data-language="en"]').click()
+                    self.assertEqual(page.evaluate("state.game.level.text"), text)
+                    page.locator('[data-language="es"]').click()
+                    page.locator("#pause-button").click()
+                    page.locator("#type-input").press_sequentially(text[5:], delay=70)
+                    page.wait_for_selector("#result-back")
+                    self.assertIn(
+                        "¡Prueba completada!", page.locator("h1").inner_text()
+                    )
+                    self.assertLess(
+                        page.evaluate("state.game.result.attempt.accuracy"), 100
+                    )
+                    self.assertIsNone(page.evaluate("state.game.result.attempt.score"))
+                    self.assertTrue(page.locator(".expression-surprised").count() > 0)
+                    self.assertEqual(guest_requests, [])
+                    self.assertEqual(
+                        page.request.get(f"http://127.0.0.1:{port}/api/student").status,
+                        401,
+                    )
+                    import sqlite3
+
+                    with sqlite3.connect(temp + "/browser.sqlite3") as db:
+                        self.assertEqual(
+                            db.execute("SELECT COUNT(*) FROM attempts").fetchone()[0], 0
+                        )
+                        self.assertEqual(
+                            db.execute("SELECT COUNT(*) FROM runs").fetchone()[0], 0
+                        )
+                    page.locator("#result-repeat").click()
+                    page.wait_for_selector("#type-input")
+                    self.assertEqual(page.evaluate("state.game.events.length"), 0)
+                    page.once("dialog", lambda dialog: dialog.accept())
+                    page.locator("#guest-exit").click()
+                    page.wait_for_selector("#login-form")
+                    page.reload()
+                    page.wait_for_selector("#login-form")
                     # Keyboard navigation into login.
                     page.keyboard.press("Tab")
                     self.assertIn("Skip", page.locator(":focus").inner_text())
